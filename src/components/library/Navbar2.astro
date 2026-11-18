@@ -1,0 +1,312 @@
+---
+/**
+ * Navbar 2 — logo left, links centred (one with a dropdown), one action right.
+ * Below 768px the action stays in the bar beside a menu button that toggles the links panel.
+ * Slots: "actions" goes before the action buttons, "menu" at the end of the mobile panel.
+ */
+import Button from "./Button.astro";
+import CompanyLogo from "./CompanyLogo.astro";
+
+interface NavLink {
+  label: string;
+  href?: string;
+}
+
+interface Action {
+  label: string;
+  href?: string;
+  variant?: "primary" | "secondary";
+}
+
+interface Props {
+  id?: string;
+  logoLabel?: string;
+  logoHref?: string;
+  links?: NavLink[];
+  dropdown?: { label: string; links: NavLink[] } | null;
+  actions?: Action[];
+}
+
+const {
+  id = "navbar-2",
+  logoLabel = "Company logo",
+  logoHref = "#",
+  links = [
+    { label: "Link One", href: "#" },
+    { label: "Link Two", href: "#" },
+    { label: "Link Three", href: "#" },
+  ],
+  dropdown = {
+    label: "Link Four",
+    links: [
+      { label: "Link Five", href: "#" },
+      { label: "Link Six", href: "#" },
+      { label: "Link Seven", href: "#" },
+    ],
+  },
+  actions = [{ label: "Button", href: "#", variant: "primary" }],
+} = Astro.props;
+---
+<header class="navbar-2" data-navbar="navbar-2">
+  <nav class="navbar-2__nav" aria-label="Main">
+    <div class="navbar-2__bar">
+      <div class="navbar-2__brand">
+        <a class="navbar-2__logo" href={logoHref}><CompanyLogo label={logoLabel} /></a>
+      </div>
+      <ul class="navbar-2__links navbar-2__links--bar">
+        {links.map((link) => (
+          <li class="navbar-2__item"><a class="navbar-2__link" href={link.href ?? "#"}>{link.label}</a></li>
+        ))}
+        {dropdown && (
+          <li class="navbar-2__item navbar-2__item--dropdown">
+            <button class="navbar-2__link navbar-2__dropdown-toggle" type="button" aria-expanded="false" aria-controls={`${id}-dropdown`} data-toggle="dropdown-open">
+              {dropdown.label}
+              <svg class="navbar-2__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+            </button>
+            <ul class="navbar-2__submenu" id={`${id}-dropdown`}>
+              {dropdown.links.map((link) => (
+                <li><a class="navbar-2__sublink" href={link.href ?? "#"}>{link.label}</a></li>
+              ))}
+            </ul>
+          </li>
+        )}
+      </ul>
+      <div class="navbar-2__actions">
+        <slot name="actions" />
+        {actions.map((action) => (
+          <Button label={action.label} href={action.href} variant={action.variant ?? "primary"} size="small" />
+        ))}
+        <button class="navbar-2__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls={`${id}-menu`} data-toggle="menu-open">
+          <svg class="navbar-2__icon navbar-2__icon--menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+          <svg class="navbar-2__icon navbar-2__icon--close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+    </div>
+    <div class="navbar-2__menu" id={`${id}-menu`}>
+      <ul class="navbar-2__links navbar-2__links--panel">
+        {links.map((link) => (
+          <li class="navbar-2__item"><a class="navbar-2__link" href={link.href ?? "#"}>{link.label}</a></li>
+        ))}
+        {dropdown && (
+          <li class="navbar-2__item navbar-2__item--dropdown">
+            <button class="navbar-2__link navbar-2__dropdown-toggle" type="button" aria-expanded="false" aria-controls={`${id}-dropdown-mobile`} data-toggle="dropdown-open">
+              {dropdown.label}
+              <svg class="navbar-2__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+            </button>
+            <ul class="navbar-2__submenu" id={`${id}-dropdown-mobile`}>
+              {dropdown.links.map((link) => (
+                <li><a class="navbar-2__sublink" href={link.href ?? "#"}>{link.label}</a></li>
+              ))}
+            </ul>
+          </li>
+        )}
+      </ul>
+      <slot name="menu" />
+    </div>
+  </nav>
+</header>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>("[data-navbar]")) {
+    if (root.dataset.navbarReady) continue;
+    root.dataset.navbarReady = "true";
+    const block = root.dataset.navbar ?? "";
+    const set = (state: string, open: boolean): void => {
+      root.classList.toggle(`${block}--${state}`, open);
+      root.querySelectorAll(`[data-toggle="${state}"][aria-expanded]`).forEach((el) => el.setAttribute("aria-expanded", String(open)));
+    };
+    root.addEventListener("click", (event) => {
+      const state = (event.target as Element).closest<HTMLElement>("[data-toggle]")?.dataset.toggle;
+      if (state) set(state, !root.classList.contains(`${block}--${state}`));
+    });
+    root.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      for (const cls of [...root.classList]) if (cls.startsWith(`${block}--`)) set(cls.slice(block.length + 2), false);
+    });
+  }
+</script>
+
+<style>
+  .navbar-2 {
+    background: var(--bg-main);
+    color: var(--text-main);
+  }
+  .navbar-2__nav {
+    display: flex;
+    flex-direction: column;
+  }
+  .navbar-2__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-16);
+    min-height: var(--space-72);
+    padding: 0 var(--space-12) 0 var(--space-section-horizontal-l);
+  }
+  .navbar-2__logo {
+    display: inline-flex;
+  }
+  .navbar-2__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+  }
+  .navbar-2__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-12);
+    border: 0;
+    background: var(--bg-invisible);
+    color: var(--icon-main);
+    cursor: pointer;
+  }
+  .navbar-2__icon {
+    width: var(--space-24);
+    height: var(--space-24);
+  }
+  .navbar-2__icon--close,
+  .navbar-2--menu-open .navbar-2__icon--menu {
+    display: none;
+  }
+  .navbar-2--menu-open .navbar-2__icon--close {
+    display: block;
+  }
+  .navbar-2__links--bar {
+    display: none;
+  }
+
+  /* Mobile panel: collapsed until the menu button opens it. */
+  .navbar-2__menu {
+    height: 0;
+    padding: 0 var(--space-section-horizontal-l);
+    overflow: hidden;
+    visibility: hidden;
+  }
+  .navbar-2--menu-open .navbar-2__menu {
+    height: auto;
+    padding-block: var(--space-16) var(--space-72);
+    overflow: visible;
+    visibility: visible;
+  }
+  .navbar-2__links--panel {
+    display: flex;
+    flex-direction: column;
+  }
+  .navbar-2__item--dropdown {
+    position: relative;
+  }
+  .navbar-2__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    width: 100%;
+    padding: var(--space-12) 0;
+    border: 0;
+    background: var(--bg-invisible);
+    color: var(--text-main);
+    font-size: var(--font-body-xl-size);
+    line-height: var(--font-body-xl-line-height);
+    font-weight: 400;
+    text-align: left;
+    cursor: pointer;
+  }
+  .navbar-2__dropdown-toggle {
+    gap: var(--space-4);
+  }
+  .navbar-2__chevron {
+    flex: none;
+    width: var(--space-24);
+    height: var(--space-24);
+    color: var(--icon-main);
+    transition: transform 0.2s ease;
+  }
+  .navbar-2--dropdown-open .navbar-2__chevron {
+    transform: rotate(180deg);
+  }
+  .navbar-2__submenu {
+    display: none;
+    flex-direction: column;
+    gap: var(--space-24);
+    padding: var(--space-12) 0;
+    background: var(--bg-main);
+  }
+  .navbar-2--dropdown-open .navbar-2__submenu {
+    display: flex;
+  }
+  .navbar-2__sublink {
+    color: var(--text-main);
+    font-size: var(--font-body-l-size);
+    line-height: var(--font-body-l-line-height);
+  }
+
+  /* States */
+  .navbar-2__link:hover,
+  .navbar-2__sublink:hover {
+    color: var(--text-secondary);
+  }
+  .navbar-2__toggle:hover {
+    background: var(--bg-secondary);
+  }
+  .navbar-2__link:active,
+  .navbar-2__sublink:active,
+  .navbar-2__toggle:active {
+    opacity: 0.7;
+  }
+  .navbar-2__logo:focus-visible,
+  .navbar-2__link:focus-visible,
+  .navbar-2__sublink:focus-visible,
+  .navbar-2__toggle:focus-visible {
+    outline: 1px solid var(--line-accent);
+    outline-offset: var(--space-4);
+  }
+  .navbar-2__link:disabled,
+  .navbar-2__toggle:disabled,
+  .navbar-2__link[aria-disabled="true"],
+  .navbar-2__sublink[aria-disabled="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  @media (min-width: 768px) {
+    .navbar-2__bar {
+      gap: var(--space-32);
+      padding: 0 var(--space-section-horizontal-l);
+    }
+    .navbar-2__brand,
+    .navbar-2__actions {
+      flex: 1 1 0;
+    }
+    .navbar-2__actions {
+      justify-content: flex-end;
+      gap: var(--space-16);
+    }
+    .navbar-2__toggle,
+    .navbar-2__menu,
+    .navbar-2--menu-open .navbar-2__menu {
+      display: none;
+    }
+    .navbar-2__links--bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-32);
+    }
+    .navbar-2__link {
+      width: auto;
+      padding: 0;
+      font-size: var(--font-body-l-size);
+      line-height: var(--font-body-l-line-height);
+    }
+    .navbar-2__submenu {
+      position: absolute;
+      top: calc(100% + var(--space-8));
+      right: 0;
+      z-index: 10;
+      gap: var(--space-16);
+      padding: var(--space-24);
+      border: 1px solid var(--line-tertiary);
+      border-radius: var(--radius-2);
+      white-space: nowrap;
+    }
+  }
+</style>

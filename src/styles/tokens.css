@@ -1,0 +1,512 @@
+/**
+ * DESIGN TOKENS — every colour, spacing step, type size and radius the site uses.
+ *
+ * Where it comes from: in the template's development repository this file is generated from
+ * the Figma export (and overwritten on the next export). In a site built from the template
+ * it is the source of truth: edit the values here (keep the names) and every page follows.
+ * To change the look, use the brand skill (agent/skills/brand) or edit the presets in presets.css.
+ *
+ * Tiers:
+ *   --color-*                  primitives (raw values) — the palette
+ *   --bg|text|icon|line-*      semantic roles (each references a primitive or a preset value);
+ *                              state variants: *--hover, *--disabled
+ *   --radius-*                 corner radii
+ *   --space-*                  spacing scale (responsive)
+ *   --font-*-size|line-height  type scale (responsive); --font-family-* are set in fonts.css
+ *
+ * Colours: the preset in presets.css (brand.preset in site.config.ts) sets eleven values for
+ * the light and the dark theme; this file derives every other colour from them. A rebrand
+ * edits presets.css; components keep using the names below whichever preset is active.
+ *
+ * Breakpoints: mobile (base) · tablet ≥768px · desktop ≥1280px
+ */
+
+/* ========================================================================
+   TIER 1 · PRIMITIVES
+   The accent family (--color-yellow-alpha-*; the name is historical) and the ink family
+   (--color-black-alpha-*) are steps of --color-yellow-alpha-100 and --color-black-alpha-100,
+   which every preset sets.
+   ===================================================================== */
+:root {
+  --color-white-alpha-0: rgba(255, 255, 255, 0);
+  --color-white-alpha-1: rgba(255, 255, 255, 0.01);
+  --color-white-alpha-4: rgba(255, 255, 255, 0.04);
+  --color-white-alpha-6: rgba(255, 255, 255, 0.06);
+  --color-white-alpha-8: rgba(255, 255, 255, 0.08);
+  --color-white-alpha-10: rgba(255, 255, 255, 0.1);
+  --color-white-alpha-16: rgba(255, 255, 255, 0.16);
+  --color-white-alpha-20: rgba(255, 255, 255, 0.2);
+  --color-white-alpha-30: rgba(255, 255, 255, 0.3);
+  --color-white-alpha-32: rgba(255, 255, 255, 0.32);
+  --color-white-alpha-40: rgba(255, 255, 255, 0.4);
+  --color-white-alpha-50: rgba(255, 255, 255, 0.5);
+  --color-white-alpha-60: rgba(255, 255, 255, 0.6);
+  --color-white-alpha-70: rgba(255, 255, 255, 0.7);
+  --color-white-alpha-80: rgba(255, 255, 255, 0.8);
+  --color-white-alpha-90: rgba(255, 255, 255, 0.9);
+  --color-white-alpha-100: #FFFFFF;
+  --color-black-alpha-0: color-mix(in srgb, var(--color-black-alpha-100) 0%, transparent);
+  --color-black-alpha-1: color-mix(in srgb, var(--color-black-alpha-100) 1%, transparent);
+  --color-black-alpha-10: color-mix(in srgb, var(--color-black-alpha-100) 10%, transparent);
+  --color-black-alpha-20: color-mix(in srgb, var(--color-black-alpha-100) 20%, transparent);
+  --color-black-alpha-30: color-mix(in srgb, var(--color-black-alpha-100) 30%, transparent);
+  --color-black-alpha-40: color-mix(in srgb, var(--color-black-alpha-100) 40%, transparent);
+  --color-black-alpha-50: color-mix(in srgb, var(--color-black-alpha-100) 50%, transparent);
+  --color-black-alpha-60: color-mix(in srgb, var(--color-black-alpha-100) 60%, transparent);
+  --color-black-alpha-70: color-mix(in srgb, var(--color-black-alpha-100) 70%, transparent);
+  --color-black-alpha-80: color-mix(in srgb, var(--color-black-alpha-100) 80%, transparent);
+  --color-black-alpha-90: color-mix(in srgb, var(--color-black-alpha-100) 90%, transparent);
+  --color-deep-black-alpha-0: rgba(0, 0, 0, 0);
+  --color-deep-black-alpha-1: rgba(0, 0, 0, 0.01);
+  --color-deep-black-alpha-10: rgba(0, 0, 0, 0.1);
+  --color-deep-black-alpha-20: rgba(0, 0, 0, 0.2);
+  --color-deep-black-alpha-30: rgba(0, 0, 0, 0.3);
+  --color-deep-black-alpha-40: rgba(0, 0, 0, 0.4);
+  --color-deep-black-alpha-50: rgba(0, 0, 0, 0.5);
+  --color-deep-black-alpha-60: rgba(0, 0, 0, 0.6);
+  --color-deep-black-alpha-70: rgba(0, 0, 0, 0.7);
+  --color-deep-black-alpha-80: rgba(0, 0, 0, 0.8);
+  --color-deep-black-alpha-90: rgba(0, 0, 0, 0.9);
+  --color-deep-black-alpha-100: #000000;
+  --color-yellow-alpha-0: color-mix(in srgb, var(--color-yellow-alpha-100) 0%, transparent);
+  --color-yellow-alpha-1: color-mix(in srgb, var(--color-yellow-alpha-100) 1%, transparent);
+  --color-yellow-alpha-4: color-mix(in srgb, var(--color-yellow-alpha-100) 4%, transparent);
+  --color-yellow-alpha-10: color-mix(in srgb, var(--color-yellow-alpha-100) 10%, transparent);
+  --color-yellow-alpha-16: color-mix(in srgb, var(--color-yellow-alpha-100) 16%, transparent);
+  --color-yellow-alpha-20: color-mix(in srgb, var(--color-yellow-alpha-100) 20%, transparent);
+  --color-yellow-alpha-30: color-mix(in srgb, var(--color-yellow-alpha-100) 30%, transparent);
+  --color-yellow-alpha-40: color-mix(in srgb, var(--color-yellow-alpha-100) 40%, transparent);
+  --color-yellow-alpha-50: color-mix(in srgb, var(--color-yellow-alpha-100) 50%, transparent);
+  --color-yellow-alpha-60: color-mix(in srgb, var(--color-yellow-alpha-100) 60%, transparent);
+  --color-yellow-alpha-70: color-mix(in srgb, var(--color-yellow-alpha-100) 70%, transparent);
+  --color-yellow-alpha-80: color-mix(in srgb, var(--color-yellow-alpha-100) 80%, transparent);
+  --color-yellow-alpha-90: color-mix(in srgb, var(--color-yellow-alpha-100) 90%, transparent);
+  --color-grey-alpha-0: rgba(226, 226, 226, 0);
+  --color-grey-alpha-1: rgba(226, 226, 226, 0.01);
+  --color-grey-alpha-10: rgba(226, 226, 226, 0.1);
+  --color-grey-alpha-20: rgba(226, 226, 226, 0.2);
+  --color-grey-alpha-30: rgba(226, 226, 226, 0.3);
+  --color-grey-alpha-40: rgba(226, 226, 226, 0.4);
+  --color-grey-alpha-50: rgba(226, 226, 226, 0.5);
+  --color-grey-alpha-60: rgba(226, 226, 226, 0.6);
+  --color-grey-alpha-70: rgba(226, 226, 226, 0.7);
+  --color-grey-alpha-80: rgba(226, 226, 226, 0.8);
+  --color-grey-alpha-90: rgba(226, 226, 226, 0.9);
+  --color-grey-alpha-96: rgba(226, 226, 226, 0.96);
+  --color-grey-alpha-100: #E2E2E2;
+}
+
+/* ========================================================================
+   TIER 2 · SEMANTIC  (each role references a primitive or a preset value via var())
+   Use the base var for default; switch to the suffixed var on interaction.
+   Set by the preset (presets.css): --bg-main, --bg-secondary, --bg-tertiary, --bg-additional,
+   --bg-reverse, --text-main, --text-secondary, --text-accent. Derived below: the rest.
+   ===================================================================== */
+:root {
+  /* --- Default state --- */
+  --bg-accent: var(--color-yellow-alpha-100);
+  --bg-accent-secondary: var(--color-yellow-alpha-16);
+  --bg-main-transparent: color-mix(in srgb, var(--bg-main) 90%, transparent);
+  --bg-decorative: var(--bg-reverse);
+  --bg-decorative-secondary: var(--color-grey-alpha-100);
+  --bg-invisible: var(--color-yellow-alpha-0);
+  --text-tertiary: color-mix(in srgb, var(--text-main) 62%, transparent);
+  --text-additional: color-mix(in srgb, var(--text-main) 50%, transparent);
+  --text-reverse: var(--color-white-alpha-100);
+  --text-reverse-secondary: var(--color-white-alpha-70);
+  --text-danger: #C2334D;
+  --icon-accent: var(--text-accent);
+  --icon-main: var(--text-main);
+  --icon-secondary: var(--text-secondary);
+  --icon-tertiary: var(--text-tertiary);
+  --icon-additional: var(--text-additional);
+  --icon-reverse: var(--text-reverse);
+  --icon-reverse-secondary: var(--text-reverse-secondary);
+  --line-accent: var(--color-yellow-alpha-100);
+  --line-accent-secondary: var(--color-yellow-alpha-50);
+  --line-main: var(--text-main);
+  --line-secondary: color-mix(in srgb, var(--text-main) 20%, transparent);
+  --line-tertiary: color-mix(in srgb, var(--text-main) 10%, transparent);
+  --line-additional: color-mix(in srgb, var(--text-main) 6%, transparent);
+  --line-screen-line: var(--color-deep-black-alpha-100);
+  /* --- Hover state --- */
+  --bg-accent--hover: var(--color-yellow-alpha-70);
+  --bg-accent-secondary--hover: var(--color-yellow-alpha-16);
+  --bg-main--hover: var(--color-black-alpha-100);
+  --bg-main-transparent--hover: var(--color-black-alpha-90);
+  --bg-secondary--hover: var(--color-white-alpha-10);
+  --bg-tertiary--hover: var(--color-white-alpha-10);
+  --bg-additional--hover: var(--color-white-alpha-30);
+  --bg-reverse--hover: var(--color-white-alpha-100);
+  --bg-decorative--hover: var(--color-deep-black-alpha-100);
+  --bg-decorative-secondary--hover: var(--color-grey-alpha-100);
+  --bg-invisible--hover: var(--color-yellow-alpha-16);
+  --text-accent--hover: var(--color-yellow-alpha-100);
+  --text-main--hover: var(--color-white-alpha-70);
+  --text-secondary--hover: var(--color-white-alpha-90);
+  --text-tertiary--hover: var(--color-white-alpha-70);
+  --text-additional--hover: var(--color-yellow-alpha-100);
+  --text-reverse--hover: var(--color-black-alpha-70);
+  --text-reverse-secondary--hover: var(--color-black-alpha-50);
+  --icon-accent--hover: var(--color-yellow-alpha-100);
+  --icon-main--hover: var(--color-white-alpha-70);
+  --icon-secondary--hover: var(--color-white-alpha-80);
+  --icon-tertiary--hover: var(--color-white-alpha-70);
+  --icon-additional--hover: var(--color-yellow-alpha-100);
+  --icon-reverse--hover: var(--color-black-alpha-70);
+  --icon-reverse-secondary--hover: var(--color-black-alpha-50);
+  --line-accent--hover: var(--color-yellow-alpha-100);
+  --line-accent-secondary--hover: var(--color-yellow-alpha-50);
+  --line-main--hover: var(--color-white-alpha-100);
+  --line-secondary--hover: var(--color-white-alpha-32);
+  --line-tertiary--hover: var(--color-white-alpha-16);
+  --line-additional--hover: var(--color-white-alpha-8);
+  --line-screen-line--hover: var(--color-deep-black-alpha-100);
+  /* --- Disabled state --- */
+  --bg-accent--disabled: var(--color-yellow-alpha-50);
+  --bg-accent-secondary--disabled: var(--color-white-alpha-4);
+  --bg-main--disabled: var(--color-black-alpha-100);
+  --bg-main-transparent--disabled: var(--color-black-alpha-90);
+  --bg-secondary--disabled: var(--color-white-alpha-4);
+  --bg-tertiary--disabled: var(--color-white-alpha-10);
+  --bg-additional--disabled: var(--color-white-alpha-10);
+  --bg-reverse--disabled: var(--color-white-alpha-100);
+  --bg-decorative--disabled: var(--color-deep-black-alpha-100);
+  --bg-decorative-secondary--disabled: var(--color-grey-alpha-100);
+  --bg-invisible--disabled: var(--color-yellow-alpha-0);
+  --text-accent--disabled: var(--color-yellow-alpha-60);
+  --text-main--disabled: var(--color-white-alpha-60);
+  --text-secondary--disabled: var(--color-white-alpha-40);
+  --text-tertiary--disabled: var(--color-white-alpha-32);
+  --text-additional--disabled: var(--color-white-alpha-20);
+  --text-reverse--disabled: var(--color-black-alpha-60);
+  --text-reverse-secondary--disabled: var(--color-black-alpha-50);
+  --icon-accent--disabled: var(--color-white-alpha-60);
+  --icon-main--disabled: var(--color-white-alpha-60);
+  --icon-secondary--disabled: var(--color-white-alpha-40);
+  --icon-tertiary--disabled: var(--color-white-alpha-32);
+  --icon-additional--disabled: var(--color-white-alpha-20);
+  --icon-reverse--disabled: var(--color-black-alpha-60);
+  --icon-reverse-secondary--disabled: var(--color-black-alpha-50);
+  --line-accent--disabled: var(--color-yellow-alpha-100);
+  --line-accent-secondary--disabled: var(--color-yellow-alpha-50);
+  --line-main--disabled: var(--color-white-alpha-100);
+  --line-secondary--disabled: var(--color-white-alpha-32);
+  --line-tertiary--disabled: var(--color-white-alpha-16);
+  --line-additional--disabled: var(--color-white-alpha-8);
+  --line-screen-line--disabled: var(--color-deep-black-alpha-100);
+}
+
+/* ========================================================================
+   THEMES  (<html data-theme="light|dark">, set before first paint by the layout)
+   The dark values of each preset live in presets.css; these apply to every preset.
+   ===================================================================== */
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --text-danger: #FF8197;
+  --line-accent: var(--text-accent);
+  --line-tertiary: color-mix(in srgb, var(--text-main) 12%, transparent);
+  --line-additional: color-mix(in srgb, var(--text-main) 8%, transparent);
+}
+
+/* ========================================================================
+   TIER 3 · RADII
+   ===================================================================== */
+:root {
+  --radius-0: 0;
+  --radius-2: 6px;
+  --radius-4: 10px;
+  --radius-12: 16px;
+  --radius-16: 24px;
+  --radius-full: 999px;
+}
+
+/* ========================================================================
+   TIER 3 · SPACING + TYPOGRAPHY  (mobile-first, base = Mobile)
+   ===================================================================== */
+:root {
+  --space-0: 0;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 36px;
+  --space-64: 52px;
+  --space-72: 64px;
+  --space-section-horizontal-l: 12px;
+  --space-section-vertical-l: 32px;
+  --space-additional-space: 124px;
+  --space-line-tag: -16px;
+  --font-titles-h1-size: 42px;
+  --font-titles-h1-line-height: 46px;
+  --font-titles-h2-size: 32px;
+  --font-titles-h2-line-height: 38px;
+  --font-titles-h3-size: 22px;
+  --font-titles-h3-line-height: 28px;
+  --font-titles-h4-size: 20px;
+  --font-titles-h4-line-height: 28px;
+  --font-body-big-number-size: 42px;
+  --font-body-big-number-line-height: 50px;
+  --font-body-addtional-number-size: 20px;
+  --font-body-addtional-number-line-height: 28px;
+  --font-body-xl-size: 18px;
+  --font-body-xl-line-height: 28px;
+  --font-body-l-size: 16px;
+  --font-body-l-line-height: 22px;
+  --font-body-m-size: 14px;
+  --font-body-m-line-height: 20px;
+  --font-body-s-size: 12px;
+  --font-body-s-line-height: 18px;
+  --font-body-xs-size: 10px;
+  --font-body-xs-line-height: 16px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --space-0: 0;
+    --space-2: 2px;
+    --space-4: 4px;
+    --space-6: 6px;
+    --space-8: 8px;
+    --space-10: 10px;
+    --space-12: 12px;
+    --space-16: 16px;
+    --space-20: 20px;
+    --space-24: 24px;
+    --space-32: 32px;
+    --space-48: 36px;
+    --space-64: 52px;
+    --space-72: 64px;
+    --space-section-horizontal-l: 12px;
+    --space-section-vertical-l: 32px;
+    --space-additional-space: 124px;
+    --space-line-tag: -16px;
+    --font-titles-h1-size: 56px;
+    --font-titles-h1-line-height: 60px;
+    --font-titles-h2-size: 40px;
+    --font-titles-h2-line-height: 46px;
+    --font-titles-h3-size: 24px;
+    --font-titles-h3-line-height: 30px;
+    --font-titles-h4-size: 20px;
+    --font-titles-h4-line-height: 28px;
+    --font-body-big-number-size: 42px;
+    --font-body-big-number-line-height: 50px;
+    --font-body-addtional-number-size: 20px;
+    --font-body-addtional-number-line-height: 28px;
+    --font-body-xl-size: 18px;
+    --font-body-xl-line-height: 28px;
+    --font-body-l-size: 16px;
+    --font-body-l-line-height: 22px;
+    --font-body-m-size: 14px;
+    --font-body-m-line-height: 20px;
+    --font-body-s-size: 12px;
+    --font-body-s-line-height: 18px;
+    --font-body-xs-size: 10px;
+    --font-body-xs-line-height: 16px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --space-0: 0;
+    --space-2: 2px;
+    --space-4: 4px;
+    --space-6: 6px;
+    --space-8: 8px;
+    --space-10: 10px;
+    --space-12: 12px;
+    --space-16: 16px;
+    --space-20: 20px;
+    --space-24: 24px;
+    --space-32: 32px;
+    --space-48: 48px;
+    --space-64: 64px;
+    --space-72: 72px;
+    --space-section-horizontal-l: 32px;
+    --space-section-vertical-l: 32px;
+    --space-additional-space: 124px;
+    --space-line-tag: -16px;
+    --font-titles-h1-size: 72px;
+    --font-titles-h1-line-height: 76px;
+    --font-titles-h2-size: 48px;
+    --font-titles-h2-line-height: 54px;
+    --font-titles-h3-size: 28px;
+    --font-titles-h3-line-height: 34px;
+    --font-titles-h4-size: 20px;
+    --font-titles-h4-line-height: 28px;
+    --font-body-big-number-size: 42px;
+    --font-body-big-number-line-height: 50px;
+    --font-body-addtional-number-size: 20px;
+    --font-body-addtional-number-line-height: 28px;
+    --font-body-xl-size: 20px;
+    --font-body-xl-line-height: 30px;
+    --font-body-l-size: 18px;
+    --font-body-l-line-height: 26px;
+    --font-body-m-size: 14px;
+    --font-body-m-line-height: 20px;
+    --font-body-s-size: 12px;
+    --font-body-s-line-height: 18px;
+    --font-body-xs-size: 10px;
+    --font-body-xs-line-height: 16px;
+  }
+}
+
+/* ========================================================================
+   MODE OVERRIDES  (pin one breakpoint mode: <html data-token-mode="desktop">)
+   ===================================================================== */
+:root[data-token-mode="mobile"] {
+  --space-0: 0;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 36px;
+  --space-64: 52px;
+  --space-72: 64px;
+  --space-section-horizontal-l: 12px;
+  --space-section-vertical-l: 32px;
+  --space-additional-space: 124px;
+  --space-line-tag: -16px;
+  --font-titles-h1-size: 36px;
+  --font-titles-h1-line-height: 44px;
+  --font-titles-h2-size: 32px;
+  --font-titles-h2-line-height: 38px;
+  --font-titles-h3-size: 22px;
+  --font-titles-h3-line-height: 32px;
+  --font-titles-h4-size: 20px;
+  --font-titles-h4-line-height: 28px;
+  --font-body-big-number-size: 42px;
+  --font-body-big-number-line-height: 50px;
+  --font-body-addtional-number-size: 20px;
+  --font-body-addtional-number-line-height: 28px;
+  --font-body-xl-size: 18px;
+  --font-body-xl-line-height: 28px;
+  --font-body-l-size: 16px;
+  --font-body-l-line-height: 22px;
+  --font-body-m-size: 14px;
+  --font-body-m-line-height: 20px;
+  --font-body-s-size: 12px;
+  --font-body-s-line-height: 18px;
+  --font-body-xs-size: 10px;
+  --font-body-xs-line-height: 16px;
+}
+
+:root[data-token-mode="tablet"] {
+  --space-0: 0;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 36px;
+  --space-64: 52px;
+  --space-72: 64px;
+  --space-section-horizontal-l: 12px;
+  --space-section-vertical-l: 32px;
+  --space-additional-space: 124px;
+  --space-line-tag: -16px;
+  --font-titles-h1-size: 36px;
+  --font-titles-h1-line-height: 44px;
+  --font-titles-h2-size: 32px;
+  --font-titles-h2-line-height: 38px;
+  --font-titles-h3-size: 22px;
+  --font-titles-h3-line-height: 32px;
+  --font-titles-h4-size: 20px;
+  --font-titles-h4-line-height: 28px;
+  --font-body-big-number-size: 42px;
+  --font-body-big-number-line-height: 50px;
+  --font-body-addtional-number-size: 20px;
+  --font-body-addtional-number-line-height: 28px;
+  --font-body-xl-size: 18px;
+  --font-body-xl-line-height: 28px;
+  --font-body-l-size: 16px;
+  --font-body-l-line-height: 22px;
+  --font-body-m-size: 14px;
+  --font-body-m-line-height: 20px;
+  --font-body-s-size: 12px;
+  --font-body-s-line-height: 18px;
+  --font-body-xs-size: 10px;
+  --font-body-xs-line-height: 16px;
+}
+
+:root[data-token-mode="desktop"] {
+  --space-0: 0;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-72: 72px;
+  --space-section-horizontal-l: 32px;
+  --space-section-vertical-l: 32px;
+  --space-additional-space: 124px;
+  --space-line-tag: -16px;
+  --font-titles-h1-size: 42px;
+  --font-titles-h1-line-height: 50px;
+  --font-titles-h2-size: 36px;
+  --font-titles-h2-line-height: 44px;
+  --font-titles-h3-size: 28px;
+  --font-titles-h3-line-height: 40px;
+  --font-titles-h4-size: 20px;
+  --font-titles-h4-line-height: 28px;
+  --font-body-big-number-size: 42px;
+  --font-body-big-number-line-height: 50px;
+  --font-body-addtional-number-size: 20px;
+  --font-body-addtional-number-line-height: 28px;
+  --font-body-xl-size: 20px;
+  --font-body-xl-line-height: 30px;
+  --font-body-l-size: 18px;
+  --font-body-l-line-height: 26px;
+  --font-body-m-size: 14px;
+  --font-body-m-line-height: 20px;
+  --font-body-s-size: 12px;
+  --font-body-s-line-height: 18px;
+  --font-body-xs-size: 10px;
+  --font-body-xs-line-height: 16px;
+}
+
+/* ========================================================================
+   TIER 4 · LAYOUT  (library extension — not in Nodity's own tokens.css)
+   Section containers and text measures. A site that adds a library component
+   needs these too; `website-toolkit-library add` lists any that are missing.
+   ===================================================================== */
+:root {
+  --size-container-l: 1280px;
+  --size-container-m: 1024px;
+  --size-container-s: 768px;
+  --size-measure-xxl: 1280px;
+  --size-measure-xl: 1024px;
+  --size-measure-l: 768px;
+  --size-measure-m: 560px;
+  --size-measure-s: 480px;
+  --size-measure-xs: 400px;
+  --size-measure-xxs: 320px;
+}

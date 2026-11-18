@@ -1,0 +1,7 @@
+---
+/** Renders its content with the legal {{TOKENS}} filled from site.config.ts (src/lib/legal.ts). */
+import { fillTokens } from "../../lib/legal";
+
+const html = await Astro.slots.render("default");
+---
+<Fragment set:html={fillTokens(html)} />

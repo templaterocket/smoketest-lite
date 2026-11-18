@@ -1,0 +1,14 @@
+---
+/** The not-found page (served by the Worker's assets for any unknown path). */
+import Page from "../layouts/Page.astro";
+import Button from "../components/ui/Button.astro";
+import { site } from "../site.config";
+---
+<Page title={`Page not found — ${site.product.name}`} noindex>
+  <div class="flex flex-col items-center gap-6 py-16 text-center">
+    <p class="font-mono text-[16px] uppercase tracking-[0.08em] text-ink-accent">404</p>
+    <h1 class="font-display text-h2 font-medium tracking-[-0.03em] text-ink">This page doesn’t exist</h1>
+    <p class="max-w-[440px] text-lg text-ink-secondary">The link may be old or mistyped. Everything about {site.product.name} starts on the homepage.</p>
+    <Button label={`Back to ${site.product.name}`} href="/" />
+  </div>
+</Page>

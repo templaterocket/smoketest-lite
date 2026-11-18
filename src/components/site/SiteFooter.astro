@@ -1,0 +1,46 @@
+---
+/**
+ * The site's footer on every page: product links, the legal pack in use (from src/lib/legal.ts),
+ * "Cookie settings" when a consent banner exists, and the oversized wordmark (craft layer).
+ */
+import CompanyLogo from "../library/CompanyLogo.astro";
+import { homeHas } from "../../lib/layout";
+import { legalDocs } from "../../lib/legal";
+import { hasPage } from "../../lib/pages";
+import { site } from "../../site.config";
+
+const product = [
+  ...(homeHas("how-it-works") ? [{ label: "How it works", href: "/#how-it-works" }] : []),
+  ...(site.pricing.mode !== "off" && hasPage("/pricing/") ? [{ label: "Pricing", href: "/pricing/" }] : []),
+  { label: "FAQ", href: "/#faq" },
+  ...(hasPage("/changelog/") ? [{ label: "Changelog", href: "/changelog/" }] : []),
+];
+const legal = [...legalDocs.map((doc) => ({ label: doc.title, href: `/legal/${doc.slug}/` })), ...(hasPage("/legal/data-request/") ? [{ label: "Your data", href: "/legal/data-request/" }] : [])];
+const consent = site.analytics.provider.id === "ga4";
+const year = new Date().getFullYear();
+const link = "text-md text-ink-secondary transition-colors hover:text-ink";
+---
+<footer class="footer-11 site-footer pt-16 sm:pt-24">
+  <div class="mx-auto flex w-full max-w-[1280px] flex-col gap-12">
+    <div class="grid gap-10 sm:grid-cols-[1.4fr_1fr_1fr]">
+      <div class="flex max-w-[320px] flex-col gap-4">
+        <a href="/" class="inline-flex w-fit"><CompanyLogo label={site.product.name} /></a>
+        <p class="text-md text-ink-secondary">{site.product.description}</p>
+      </div>
+      <nav aria-label="Product" class="flex flex-col gap-3">
+        <p class="text-sm font-semibold uppercase tracking-[0.06em] text-ink">Product</p>
+        {product.map((item) => <a class={link} href={item.href}>{item.label}</a>)}
+      </nav>
+      <nav aria-label="Legal" class="flex flex-col gap-3">
+        <p class="text-sm font-semibold uppercase tracking-[0.06em] text-ink">Legal</p>
+        {legal.map((item) => <a class={link} href={item.href}>{item.label}</a>)}
+        {consent && <button type="button" data-consent-open class:list={[link, "w-fit cursor-pointer border-0 bg-transparent p-0 text-left"]}>Cookie settings</button>}
+      </nav>
+    </div>
+    <div class="flex flex-col gap-2 border-t border-line-soft pt-6 text-sm text-ink-secondary sm:flex-row sm:justify-between">
+      <p>© {year} {site.product.name}</p>
+      <a class="hover:text-ink" href="/legal/privacy/">Privacy</a>
+    </div>
+  </div>
+  <p class="footer-11__wordmark" aria-hidden="true">{site.product.name}</p>
+</footer>

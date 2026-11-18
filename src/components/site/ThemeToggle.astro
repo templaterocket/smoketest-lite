@@ -1,0 +1,167 @@
+---
+/**
+ * The light/dark switch in the navbar (brand.themeToggle). "icon" sits in the bar from 768px,
+ * "row" in the mobile menu panel. Both flip <html data-theme>; the choice is saved in
+ * localStorage under smoketest:theme only while it differs from what the site would show anyway
+ * (brand.theme, or the device's setting for "system") — the cookie policy lists it.
+ */
+import { THEME_STORAGE_KEY } from "../../lib/theme";
+import { site } from "../../site.config";
+
+interface Props {
+  variant?: "icon" | "row";
+}
+
+const { variant = "icon" } = Astro.props;
+---
+<button
+  type="button"
+  role="switch"
+  aria-checked="false"
+  class:list={["theme-switch", `theme-switch--${variant}`]}
+  data-theme-switch={JSON.stringify({ key: THEME_STORAGE_KEY, configured: site.brand.theme })}
+  aria-label={variant === "icon" ? "Dark theme" : undefined}
+>
+  {variant === "row" && <span class="theme-switch__label">Dark theme</span>}
+  <span class="theme-switch__icon" aria-hidden="true">
+    <svg class="theme-switch__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" /></svg>
+    <svg class="theme-switch__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" /></svg>
+  </span>
+  {variant === "row" && <span class="theme-switch__track" aria-hidden="true"><span class="theme-switch__thumb"></span></span>}
+</button>
+
+<script>
+  const switches = [...document.querySelectorAll<HTMLButtonElement>("[data-theme-switch]")];
+  const root = document.documentElement;
+  const device = matchMedia("(prefers-color-scheme: dark)");
+  const sync = (): void => switches.forEach((button) => button.setAttribute("aria-checked", String(root.dataset.theme === "dark")));
+  for (const button of switches) {
+    button.addEventListener("click", () => {
+      const { key, configured } = JSON.parse(button.dataset.themeSwitch ?? "{}") as { key: string; configured: string };
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", meta.getAttribute(`data-${next}`) ?? "");
+      const fallback = configured === "system" ? (device.matches ? "dark" : "light") : configured;
+      try {
+        if (next === fallback) localStorage.removeItem(key);
+        else localStorage.setItem(key, next);
+      } catch {
+        // Storage blocked: the choice lasts for this page.
+      }
+      sync();
+    });
+  }
+  // The layout's script also follows the device setting; keep the switches in step with it.
+  new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  sync();
+</script>
+
+<style>
+  .theme-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-12);
+    border: 0;
+    background: var(--bg-invisible);
+    color: var(--icon-main);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .theme-switch:focus-visible {
+    outline: 2px solid var(--line-accent);
+    outline-offset: 2px;
+  }
+  .theme-switch:active {
+    transform: scale(0.96);
+  }
+  .theme-switch__icon {
+    display: grid;
+    width: 20px;
+    height: 20px;
+  }
+  .theme-switch__icon svg {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* The moon offers dark on a light page, the sun offers light on a dark one. */
+  .theme-switch__sun,
+  :global(:root[data-theme="dark"]) .theme-switch__moon {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.6);
+  }
+  :global(:root[data-theme="dark"]) .theme-switch__sun {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* In the bar: a 44px square, from 768px (the mobile bar has no room; the panel has the row). */
+  .theme-switch--icon {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-4);
+    color: var(--text-secondary);
+  }
+  .theme-switch--icon:hover {
+    background: var(--bg-secondary);
+    color: var(--text-main);
+  }
+  @media (min-width: 768px) {
+    .theme-switch--icon {
+      display: inline-flex;
+    }
+  }
+
+  /* In the mobile panel: a full-width row with a switch track. */
+  .theme-switch--row {
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 52px;
+    padding: var(--space-12) 0;
+    color: var(--text-main);
+    font-size: 17px;
+    line-height: 24px;
+    text-align: left;
+  }
+  .theme-switch--row .theme-switch__label {
+    flex: 1;
+  }
+  .theme-switch--row .theme-switch__icon {
+    color: var(--text-secondary);
+  }
+  .theme-switch__track {
+    position: relative;
+    width: 44px;
+    height: 26px;
+    border-radius: var(--radius-full);
+    background: var(--line-secondary);
+    transition: background-color 0.2s ease;
+  }
+  .theme-switch__thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-white-alpha-100);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .theme-switch[aria-checked="true"] .theme-switch__track {
+    background: var(--bg-accent);
+  }
+  .theme-switch[aria-checked="true"] .theme-switch__thumb {
+    transform: translateX(18px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .theme-switch__icon svg,
+    .theme-switch__thumb {
+      transition: none;
+    }
+  }
+</style>

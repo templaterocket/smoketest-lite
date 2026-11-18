@@ -1,0 +1,226 @@
+---
+/**
+ * Faq2 — Relume FAQ family faq/f2 (faq-3, faq-6).
+ * Title and a contact button beside an accordion list; stacked on mobile.
+ * `look`: "divider" (ruled list, chevron) | "card" (filled cards, plus icon).
+ */
+import Button from "./Button.astro";
+
+interface Question {
+  question: string;
+  answer: string;
+  open?: boolean;
+}
+
+interface Props {
+  heading?: string;
+  description?: string;
+  questions?: Question[];
+  look?: "divider" | "card";
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const answer =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat. Aenean faucibus nibh et justo cursus id rutrum lorem imperdiet. Nunc ut sem vitae risus tristique posuere.";
+
+const {
+  heading = "FAQs",
+  description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.",
+  questions = Array.from({ length: 5 }, () => ({ question: "Question text goes here", answer, open: true })),
+  look = "divider",
+  ctaLabel = "Contact",
+  ctaHref = "#",
+} = Astro.props;
+---
+<section class:list={["faq-2", `faq-2--${look}`]}>
+  <div class="faq-2__container">
+    <div class="faq-2__component">
+      <div class="faq-2__title">
+        <div class="faq-2__title-text">
+          <h2 class="faq-2__heading">{heading}</h2>
+          <p class="faq-2__description">{description}</p>
+        </div>
+        <div class="faq-2__actions">
+          <Button label={ctaLabel} href={ctaHref} variant="secondary" />
+        </div>
+      </div>
+      <div class="faq-2__list">
+        {questions.map((item) => (
+          <details class="faq-2__item" open={item.open}>
+            <summary class="faq-2__question">
+              <span class="faq-2__question-text">{item.question}</span>
+              {look === "card" ? (
+                <svg class="faq-2__icon faq-2__icon--plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+              ) : (
+                <svg class="faq-2__icon faq-2__icon--chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+              )}
+            </summary>
+            <div class="faq-2__answer">
+              <p class="faq-2__answer-text">{item.answer}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-2 {
+    padding: var(--space-section-vertical-l) var(--space-section-horizontal-l);
+    background: var(--bg-main);
+    color: var(--text-main);
+  }
+  .faq-2__container {
+    width: 100%;
+    max-width: var(--size-container-l);
+    margin-inline: auto;
+  }
+  .faq-2__component {
+    display: grid;
+    gap: var(--space-48);
+  }
+  .faq-2__title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-24);
+  }
+  .faq-2__title-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-20);
+  }
+  .faq-2__heading {
+    margin: 0;
+    font-size: var(--font-titles-h2-size);
+    line-height: var(--font-titles-h2-line-height);
+    font-weight: 700;
+  }
+  .faq-2__description {
+    margin: 0;
+    font-size: var(--font-body-l-size);
+    line-height: var(--font-body-l-line-height);
+  }
+  .faq-2__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-24);
+  }
+  .faq-2__list {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .faq-2--divider .faq-2__list {
+    border-bottom: 1px solid var(--line-tertiary);
+  }
+  .faq-2--card .faq-2__list {
+    gap: var(--space-16);
+  }
+  .faq-2--card .faq-2__item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--line-tertiary);
+    border-radius: var(--radius-12);
+  }
+  .faq-2__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-16);
+    padding: var(--space-20) var(--space-0);
+    list-style: none;
+    cursor: pointer;
+    font-size: var(--font-body-l-size);
+    line-height: var(--font-body-l-line-height);
+    font-weight: 700;
+    transition: color 0.15s ease;
+  }
+  .faq-2__question::-webkit-details-marker {
+    display: none;
+  }
+  .faq-2--divider .faq-2__question {
+    border-top: 1px solid var(--line-tertiary);
+  }
+  .faq-2--card .faq-2__question {
+    gap: var(--space-24);
+    padding: var(--space-16) var(--space-20);
+  }
+  .faq-2__question:hover {
+    color: var(--text-secondary);
+  }
+  .faq-2__question:active {
+    opacity: 0.7;
+  }
+  .faq-2__question:focus-visible {
+    outline: 1px solid var(--line-accent);
+    outline-offset: var(--space-4);
+  }
+  .faq-2__question[aria-disabled="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .faq-2__icon {
+    flex: none;
+    color: var(--icon-main);
+    transition: transform 0.2s ease;
+  }
+  .faq-2__icon--chevron {
+    width: var(--space-32);
+    height: var(--space-32);
+  }
+  .faq-2__icon--plus {
+    width: var(--space-24);
+    height: var(--space-24);
+  }
+  .faq-2__item[open] .faq-2__icon--chevron {
+    transform: rotate(180deg);
+  }
+  .faq-2__item[open] .faq-2__icon--plus {
+    transform: rotate(45deg);
+  }
+  .faq-2__answer {
+    padding: var(--space-0) var(--space-0) var(--space-20);
+  }
+  .faq-2--card .faq-2__answer {
+    padding: var(--space-0) var(--space-20) var(--space-20);
+  }
+  .faq-2__answer-text {
+    margin: 0;
+    font-size: var(--font-body-l-size);
+    line-height: var(--font-body-l-line-height);
+  }
+
+  @media (min-width: 768px) {
+    .faq-2__component {
+      grid-template-columns: 5fr 7fr;
+      align-items: start;
+      gap: var(--space-72);
+    }
+    .faq-2__title {
+      gap: var(--space-32);
+    }
+    .faq-2__title-text {
+      gap: var(--space-24);
+    }
+    .faq-2__description {
+      font-size: var(--font-body-xl-size);
+      line-height: var(--font-body-xl-line-height);
+    }
+    .faq-2__question {
+      gap: var(--space-24);
+      font-size: var(--font-body-xl-size);
+      line-height: var(--font-body-xl-line-height);
+    }
+    .faq-2--card .faq-2__question {
+      padding: var(--space-20) var(--space-24);
+    }
+    .faq-2__answer {
+      padding-bottom: var(--space-24);
+    }
+    .faq-2--card .faq-2__answer {
+      padding: var(--space-0) var(--space-24) var(--space-24);
+    }
+  }
+</style>

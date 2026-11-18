@@ -1,0 +1,50 @@
+---
+/**
+ * The cookie consent banner. It exists only when the analytics provider sets cookies (GA4):
+ * the cookieless providers need no banner, so by default the template shows none. "Accept" and
+ * "Decline" weigh the same; the choice is kept in localStorage and can be changed from the
+ * footer ("Cookie settings").
+ */
+import { site } from "../../site.config";
+
+const needed = site.analytics.provider.id === "ga4";
+---
+{needed && (
+  <div data-consent hidden class="fixed inset-x-3 bottom-3 z-[60] mx-auto flex max-w-[640px] flex-col gap-4 rounded-xl border border-line bg-surface p-5 text-ink shadow-[0_30px_60px_-20px_var(--color-black-alpha-40)] sm:flex-row sm:items-center sm:p-6" role="dialog" aria-live="polite" aria-label="Cookie consent">
+    <p class="text-md text-ink-secondary">
+      We’d like to use Google Analytics, which sets cookies, to see how visitors use this page. It stays off unless you accept. <a class="underline underline-offset-2" href="/legal/cookies/">Cookie policy</a>.
+    </p>
+    <div class="flex shrink-0 gap-2">
+      <button type="button" data-consent-choice="denied" class="button button--secondary button--small inline-flex cursor-pointer items-center justify-center border border-solid">Decline</button>
+      <button type="button" data-consent-choice="granted" class="button button--secondary button--small inline-flex cursor-pointer items-center justify-center border border-solid">Accept</button>
+    </div>
+  </div>
+)}
+
+<script>
+  const banner = document.querySelector<HTMLElement>("[data-consent]");
+  if (banner) {
+    let choice: string | null = null;
+    try {
+      choice = localStorage.getItem("smoketest:consent");
+    } catch {
+      choice = null;
+    }
+    if (!choice) banner.hidden = false;
+    banner.addEventListener("click", (event) => {
+      const button = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-consent-choice]") : null;
+      if (!button) return;
+      const value = button.dataset.consentChoice ?? "denied";
+      try {
+        localStorage.setItem("smoketest:consent", value);
+      } catch {
+        // Private mode: the choice lasts for this page only.
+      }
+      banner.hidden = true;
+      if (value === "granted") document.dispatchEvent(new Event("consent:granted"));
+    });
+    document.addEventListener("click", (event) => {
+      if (event.target instanceof Element && event.target.closest("[data-consent-open]")) banner.hidden = false;
+    });
+  }
+</script>

@@ -1,0 +1,109 @@
+---
+/**
+ * The page shell: theme (tokens.css with the preset from presets.css), fonts, reset, Tailwind
+ * and the craft layer; SEO tags (canonical, Open Graph, Twitter, JSON-LD) from site.config.ts —
+ * absolute URLs only once product.url is the real address (src/lib/url.ts); the icons and the
+ * web manifest; analytics and, only when the chosen analytics sets cookies, the consent banner.
+ * <html> carries the look: data-preset, data-fonts and data-theme (light or dark, settled by the
+ * inline script below before the first paint).
+ */
+import "../styles/tokens.css";
+import "../styles/presets.css";
+import "../styles/fonts.css";
+import "../styles/base.css";
+import "../styles/tailwind.css";
+import "../styles/craft.css";
+import Analytics from "../components/site/Analytics.astro";
+import ConsentBanner from "../components/site/ConsentBanner.astro";
+import { hasPage } from "../lib/pages";
+import { THEME_STORAGE_KEY, fontPreloads, initialTheme, palette } from "../lib/theme";
+import { absolute, siteUrl } from "../lib/url";
+import { site } from "../site.config";
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Keep the page out of search results (thank-you pages, previews). */
+  noindex?: boolean;
+  /** Extra JSON-LD objects for this page (FAQPage, SoftwareApplication…). */
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { title, description = site.product.description, noindex = false, jsonLd = [] } = Astro.props;
+// Pages are folders (astro.config.mjs), so the canonical path ends with a slash; none while
+// product.url is a placeholder, and none on pages kept out of search.
+const canonical = siteUrl && !noindex ? new URL(Astro.url.pathname.replace(/(\/index)?\.html$/u, "/").replace(/\/?$/u, "/"), siteUrl).toString() : undefined;
+const ogImage = absolute(site.seo.ogImage);
+const graph = [
+  { "@context": "https://schema.org", "@type": "WebSite", name: site.product.name, ...(siteUrl && { url: siteUrl.toString() }), description: site.product.description },
+  ...jsonLd,
+];
+// The browser bar takes the page colour of the theme in view.
+const themeColors = { light: palette("light").hex("--bg-main"), dark: palette("dark").hex("--bg-main") };
+const theme = { configured: site.brand.theme, toggle: site.brand.themeToggle, key: THEME_STORAGE_KEY };
+---
+<!doctype html>
+<html lang={site.seo.locale} data-preset={site.brand.preset} data-fonts={site.brand.fonts} data-theme={initialTheme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content={themeColors[initialTheme]} data-light={themeColors.light} data-dark={themeColors.dark} />
+    <script is:inline define:vars={{ theme }}>
+      // The theme before the first paint, so a dark page never flashes white: the visitor's saved
+      // choice (only with the navbar switch), else the configured theme ("system" asks the device).
+      const root = document.documentElement;
+      const device = matchMedia("(prefers-color-scheme: dark)");
+      const apply = () => {
+        let saved = null;
+        try {
+          if (theme.toggle) saved = localStorage.getItem(theme.key);
+        } catch {
+          saved = null;
+        }
+        const next = saved === "light" || saved === "dark" ? saved : theme.configured === "system" ? (device.matches ? "dark" : "light") : theme.configured;
+        root.dataset.theme = next;
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute("content", meta.getAttribute(`data-${next}`) ?? "");
+      };
+      apply();
+      device.addEventListener("change", apply);
+    </script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.product.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {site.seo.twitter && <meta name="twitter:site" content={site.seo.twitter} />}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    {hasPage("/rss.xml") && <link rel="alternate" type="application/rss+xml" title={`${site.product.name} changelog`} href="/rss.xml" />}
+    {fontPreloads.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
+    <script type="application/ld+json" set:html={JSON.stringify(graph.length === 1 ? graph[0] : graph)} />
+    <script is:inline>
+      // Lets craft.css hold back revealed blocks until fx.js shows them; shows everything if it never runs.
+      document.documentElement.classList.add("fx");
+      setTimeout(() => {
+        if (!document.documentElement.classList.contains("fx-ready")) document.documentElement.classList.add("fx-failsafe");
+      }, 2500);
+    </script>
+    <Analytics />
+  </head>
+  <body class="craft">
+    <canvas class="fx-pointer" aria-hidden="true"></canvas>
+    <slot />
+    <ConsentBanner />
+    <script>
+      import "../scripts/fx/fx.js";
+    </script>
+  </body>
+</html>

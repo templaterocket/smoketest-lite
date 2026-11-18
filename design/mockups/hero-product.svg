@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="'DM Sans', 'Helvetica Neue', Arial, sans-serif">
+  <!--FONTS dm-400 dm-600 manrope-600 mono-400-->
+  <!-- Colour roles, Forma light here; src/pages/images/[mockup].svg.ts swaps in the preset's values. -->
+  <style id="palette">svg{--m-surface:#FFFFFF;--m-surface-2:#F9F7FC;--m-line:#ECE8F2;--m-ink:#1B1426;--m-ink-2:#687083;--m-ink-3:#9BA4B6;--m-tint:#EFEBFF;--m-tint-2:#E4DDFB;--m-tint-3:#D9CFFB;--m-accent:#5B3FE0;--m-accent-text:#5B3FE0;--m-accent-2:#8B5CF6;--m-accent-light:#7B5CF2;--m-highlight:#C084FC;--m-grad-start:#6246EA;--m-terminal-accent:#A78BFA;--m-btn-1:#6A4EEE;--m-btn-2:#5236D6;--m-frame-1:#35278A;--m-frame-2:#5139C9;--m-frame-3:#7658EC;--m-glow:#CDB4FF;--m-page-glow:#C9B6FF;--m-reverse:#1B1426;--m-shadow:#1B1426;--m-shadow-tint:#2A1D5C}</style>
+  <!-- Smoketest Lite's hero: a founder's waitlist page (hero with the form, FAQ) and what
+       site.config.ts sets for it — the colour preset, light and dark, where signups go. -->
+  <defs>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" style="stop-color:var(--m-frame-1)"/>
+      <stop offset="0.52" style="stop-color:var(--m-frame-2)"/>
+      <stop offset="1" style="stop-color:var(--m-frame-3)"/>
+    </linearGradient>
+    <radialGradient id="glowTR" cx="1600" cy="0" r="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-opacity="0.6" style="stop-color:var(--m-glow)"/>
+      <stop offset="1" stop-opacity="0" style="stop-color:var(--m-glow)"/>
+    </radialGradient>
+    <radialGradient id="glowBL" cx="0" cy="900" r="800" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-opacity="0.32" style="stop-color:var(--m-highlight)"/>
+      <stop offset="1" stop-opacity="0" style="stop-color:var(--m-highlight)"/>
+    </radialGradient>
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="12" r="1.2" fill="#FFFFFF" fill-opacity="0.16"/>
+    </pattern>
+    <linearGradient id="violet" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" style="stop-color:var(--m-grad-start)"/>
+      <stop offset="0.5" style="stop-color:var(--m-accent-2)"/>
+      <stop offset="1" style="stop-color:var(--m-highlight)"/>
+    </linearGradient>
+    <linearGradient id="btn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color:var(--m-btn-1)"/>
+      <stop offset="1" style="stop-color:var(--m-btn-2)"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="30" stdDeviation="40" flood-opacity="0.35" style="flood-color:var(--m-shadow)"/>
+    </filter>
+    <filter id="lift" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-opacity="0.28" style="flood-color:var(--m-shadow)"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#frame)"/>
+  <rect width="1600" height="900" fill="url(#glowTR)"/>
+  <rect width="1600" height="900" fill="url(#glowBL)"/>
+  <rect width="1600" height="900" fill="url(#dots)"/>
+
+  <!-- The app window: a founder's waitlist page and its settings -->
+  <g transform="translate(120 88)">
+    <rect width="1360" height="860" rx="22" filter="url(#shadow)" style="fill:var(--m-surface)"/>
+    <path d="M22 0h1316a22 22 0 0 1 22 22v30H0V22A22 22 0 0 1 22 0z" style="fill:var(--m-surface-2)"/>
+    <line x1="0" y1="52" x2="1360" y2="52" style="stroke:var(--m-line)"/>
+    <circle cx="28" cy="26" r="6" style="fill:var(--m-tint-2)"/>
+    <circle cx="48" cy="26" r="6" style="fill:var(--m-tint-2)"/>
+    <circle cx="68" cy="26" r="6" style="fill:var(--m-tint-2)"/>
+    <rect x="560" y="14" width="240" height="25" rx="12.5" style="fill:var(--m-surface);stroke:var(--m-line)"/>
+    <path d="M637 24.5v-2a3 3 0 0 1 6 0v2 M635.5 24.5h9v7h-9z" fill="none" stroke-width="1.4" stroke-linejoin="round" style="stroke:var(--m-ink-3)"/>
+    <text x="652" y="31" font-size="13" style="fill:var(--m-ink-2)">invoicely.com</text>
+
+    <!-- Founder's page: the hero with the form -->
+    <rect x="48" y="80" width="26" height="26" rx="8" fill="url(#btn)"/>
+    <path d="M56 99l5-9 5 9" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="84" y="99" font-family="Manrope, sans-serif" font-size="17" font-weight="600" style="fill:var(--m-ink)">Invoicely</text>
+    <rect x="588" y="89" width="40" height="7" rx="3.5" fill-opacity="0.1" style="fill:var(--m-ink)"/>
+    <circle cx="646" cy="93" r="9" stroke-width="1.5" style="fill:var(--m-surface);stroke:var(--m-line)"/>
+    <path d="M646 88.5a4.5 4.5 0 1 0 4.5 4.5 3.4 3.4 0 0 1-4.5-4.5z" style="fill:var(--m-ink-2)"/>
+    <rect x="664" y="76" width="124" height="34" rx="9" style="fill:var(--m-ink)"/>
+    <text x="726" y="98" font-size="13" font-weight="600" text-anchor="middle" style="fill:var(--m-surface)">Join waitlist</text>
+
+    <rect x="48" y="146" width="152" height="30" rx="15" style="fill:var(--m-tint)"/>
+    <circle cx="66" cy="161" r="4" style="fill:var(--m-accent)"/>
+    <text x="78" y="166" font-size="13" font-weight="600" style="fill:var(--m-accent-text)">Early access</text>
+    <text x="48" y="238" font-family="Manrope, sans-serif" font-size="50" font-weight="600" letter-spacing="-1.6" style="fill:var(--m-ink)">Invoices that chase</text>
+    <text x="48" y="296" font-family="Manrope, sans-serif" font-size="50" font-weight="600" fill="url(#violet)" letter-spacing="-1.6">themselves.</text>
+    <text x="48" y="340" font-size="18" style="fill:var(--m-ink-2)">Polite reminders, on schedule, until the client pays.</text>
+
+    <rect x="48" y="368" width="384" height="56" rx="12" stroke-width="1.5" style="fill:var(--m-surface);stroke:var(--m-tint-2)"/>
+    <text x="70" y="402" font-size="16" style="fill:var(--m-ink-3)">you@studio.com</text>
+    <rect x="444" y="368" width="196" height="56" rx="12" fill="url(#btn)"/>
+    <rect x="445" y="369" width="194" height="1.5" rx="0.75" fill="#FFFFFF" fill-opacity="0.35"/>
+    <text x="542" y="402" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Join the waitlist</text>
+    <text x="48" y="456" font-size="14" style="fill:var(--m-ink-2)">One email at launch. Unsubscribe anytime. <tspan text-decoration="underline">Privacy policy</tspan>.</text>
+
+    <!-- … and its FAQ -->
+    <text x="48" y="520" font-family="Manrope, sans-serif" font-size="22" font-weight="600" letter-spacing="-0.4" style="fill:var(--m-ink)">Questions</text>
+    <g transform="translate(48 540)">
+      <rect width="740" height="52" rx="12" style="fill:var(--m-surface-2);stroke:var(--m-line)"/>
+      <text x="22" y="32" font-size="15" font-weight="600" style="fill:var(--m-ink)">When does Invoicely launch?</text>
+      <path d="M708 26h12 M714 20v12" fill="none" stroke-width="2" stroke-linecap="round" style="stroke:var(--m-accent-text)"/>
+    </g>
+    <g transform="translate(48 604)">
+      <rect width="740" height="52" rx="12" style="fill:var(--m-surface-2);stroke:var(--m-line)"/>
+      <text x="22" y="32" font-size="15" font-weight="600" style="fill:var(--m-ink)">Which accounting tools will it work with?</text>
+      <path d="M708 26h12 M714 20v12" fill="none" stroke-width="2" stroke-linecap="round" style="stroke:var(--m-accent-text)"/>
+    </g>
+
+    <!-- Settings panel: what site.config.ts sets -->
+    <rect x="836" y="52" width="524" height="808" style="fill:var(--m-surface-2)"/>
+    <line x1="836" y1="52" x2="836" y2="860" style="stroke:var(--m-line)"/>
+    <text x="864" y="98" font-family="'JetBrains Mono', monospace" font-size="15" style="fill:var(--m-ink)">site.config.ts</text>
+    <rect x="1222" y="80" width="110" height="26" rx="13" style="fill:var(--m-surface);stroke:var(--m-line)"/>
+    <text x="1277" y="98" font-size="12" text-anchor="middle" style="fill:var(--m-ink-2)">one file</text>
+
+    <!-- The six colour presets (their real accents) -->
+    <g transform="translate(864 124)">
+      <rect width="468" height="140" rx="14" style="fill:var(--m-surface);stroke:var(--m-line)"/>
+      <text x="18" y="32" font-size="13" style="fill:var(--m-ink-2)">Colour preset</text>
+      <circle cx="44" cy="76" r="23" fill="none" stroke-width="2" style="stroke:var(--m-accent-text)"/>
+      <circle cx="44" cy="76" r="17" fill="#5B3FE0"/>
+      <circle cx="120" cy="76" r="17" fill="#1F5FD1"/>
+      <circle cx="196" cy="76" r="17" fill="#14775A"/>
+      <circle cx="272" cy="76" r="17" fill="#C2410C"/>
+      <circle cx="348" cy="76" r="17" fill="#BE2560"/>
+      <circle cx="424" cy="76" r="17" fill="#18181B" stroke="#FFFFFF" stroke-opacity="0.2"/>
+      <g font-size="12" text-anchor="middle" style="fill:var(--m-ink-2)">
+        <text x="44" y="124" font-weight="600" style="fill:var(--m-ink)">forma</text>
+        <text x="120" y="124">ocean</text>
+        <text x="196" y="124">forest</text>
+        <text x="272" y="124">ember</text>
+        <text x="348" y="124">rose</text>
+        <text x="424" y="124">graphite</text>
+      </g>
+    </g>
+
+    <!-- Light and dark -->
+    <g transform="translate(864 280)">
+      <rect width="468" height="236" rx="14" style="fill:var(--m-surface);stroke:var(--m-line)"/>
+      <text x="18" y="32" font-size="13" style="fill:var(--m-ink-2)">Light and dark</text>
+      <!-- The light page stays light and the dark one dark, in both variants of this image. -->
+      <g transform="translate(18 50)">
+        <rect width="208" height="140" rx="10" fill="#F9F7FC" stroke="#1B1426" stroke-opacity="0.1"/>
+        <rect x="18" y="22" width="132" height="12" rx="6" fill="#1B1426" fill-opacity="0.75"/>
+        <rect x="18" y="42" width="96" height="12" rx="6" style="fill:var(--m-accent-2)"/>
+        <rect x="18" y="66" width="150" height="7" rx="3.5" fill="#1B1426" fill-opacity="0.12"/>
+        <rect x="18" y="94" width="104" height="28" rx="7" fill="#FFFFFF" stroke="#1B1426" stroke-opacity="0.12"/>
+        <rect x="128" y="94" width="62" height="28" rx="7" fill="url(#btn)"/>
+      </g>
+      <g transform="translate(242 50)">
+        <rect width="208" height="140" rx="10" style="fill:var(--m-reverse)"/>
+        <rect x="18" y="22" width="132" height="12" rx="6" fill="#FFFFFF" fill-opacity="0.85"/>
+        <rect x="18" y="42" width="96" height="12" rx="6" style="fill:var(--m-highlight)"/>
+        <rect x="18" y="66" width="150" height="7" rx="3.5" fill="#FFFFFF" fill-opacity="0.2"/>
+        <rect x="18" y="94" width="104" height="28" rx="7" fill="#FFFFFF" fill-opacity="0.1" stroke="#FFFFFF" stroke-opacity="0.25"/>
+        <rect x="128" y="94" width="62" height="28" rx="7" fill="url(#btn)"/>
+      </g>
+      <circle cx="40" cy="214" r="7" fill="none" stroke-width="1.8" style="stroke:var(--m-ink-2)"/>
+      <text x="56" y="219" font-size="13" style="fill:var(--m-ink-2)">light</text>
+      <path d="M266 207.5a7 7 0 1 0 7 7 5.4 5.4 0 0 1-7-7z" style="fill:var(--m-ink-2)"/>
+      <text x="282" y="219" font-size="13" style="fill:var(--m-ink-2)">dark · follows the device</text>
+    </g>
+
+    <!-- Where signups go -->
+    <g transform="translate(864 532)">
+      <rect width="468" height="120" rx="14" style="fill:var(--m-surface);stroke:var(--m-line)"/>
+      <text x="18" y="32" font-size="13" style="fill:var(--m-ink-2)">Signups go to</text>
+      <text x="18" y="66" font-family="'JetBrains Mono', monospace" font-size="13" style="fill:var(--m-ink)">provider: { id: "web3forms" }</text>
+      <rect x="18" y="80" width="22" height="16" rx="3" fill="none" stroke-width="1.8" style="stroke:var(--m-accent-text)"/>
+      <path d="M19 82l10 7 10-7" fill="none" stroke-width="1.8" stroke-linejoin="round" style="stroke:var(--m-accent-text)"/>
+      <text x="52" y="94" font-size="14" font-weight="600" style="fill:var(--m-accent-text)">Each signup emailed to you</text>
+    </g>
+
+    <rect x="864" y="668" width="468" height="52" rx="14" style="fill:var(--m-tint)"/>
+    <circle cx="890" cy="694" r="10" style="fill:var(--m-accent)"/>
+    <path d="M885 694l3.5 3.5 6.5-7" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="910" y="699" font-size="14" font-weight="600" style="fill:var(--m-accent-text)">Privacy policy draft, filled from the config</text>
+  </g>
+
+  <!-- The build: a static site for any host -->
+  <g transform="translate(64 752)" filter="url(#lift)">
+    <rect width="336" height="62" rx="16" stroke="#FFFFFF" stroke-opacity="0.12" style="fill:var(--m-reverse)"/>
+    <circle cx="32" cy="31" r="11" style="fill:var(--m-accent)"/>
+    <path d="M26.5 31l3.5 3.5 6.5-7" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="54" y="37" font-family="'JetBrains Mono', monospace" font-size="15" fill="#FFFFFF">npm run build</text>
+    <text x="314" y="37" font-size="14" fill="#FFFFFF" fill-opacity="0.65" text-anchor="end">static site</text>
+  </g>
+</svg>

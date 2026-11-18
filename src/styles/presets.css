@@ -1,0 +1,187 @@
+/**
+ * COLOUR PRESETS — the values behind the colour roles of tokens.css, one block per preset and
+ * theme. site.config.ts picks one (`brand.preset`); the layout writes it on <html data-preset>,
+ * and the theme on <html data-theme> ("light" or "dark").
+ *
+ * Every block sets the same eleven values; tokens.css derives the rest from them (the accent and
+ * ink alpha scales, lines, icons, tertiary text). To use your brand colours, edit the values of
+ * the preset you picked — keep the names — then run `npm run validate`: V22 checks that text
+ * stays readable (contrast ≥ 4.5:1) in both themes.
+ *
+ *   --color-yellow-alpha-100   the accent (buttons, focus, tints); white text sits on it
+ *   --color-highlight          a second, lighter hue for gradients and glows
+ *   --color-black-alpha-100    ink: shadows and overlays
+ *   --bg-main | -secondary | -tertiary | -additional   page, bands, tinted surfaces
+ *   --bg-reverse               the contrast panel (white text on it)
+ *   --text-main | -secondary   body text, quieter text
+ *   --text-accent              accent-coloured text and links
+ */
+
+/* Forma — violet, the template's own look (default). */
+:root,
+:root[data-preset="forma"] {
+  --color-yellow-alpha-100: #5B3FE0;
+  --color-highlight: #C084FC;
+  --color-black-alpha-100: #1B1426;
+  --bg-main: #FFFFFF;
+  --bg-secondary: #F9F7FC;
+  --bg-tertiary: #EFEBFF;
+  --bg-additional: #E4DDFB;
+  --bg-reverse: #1B1426;
+  --text-main: #1B1426;
+  --text-secondary: #626A7D;
+  --text-accent: #5B3FE0;
+}
+:root[data-preset="forma"][data-theme="dark"] {
+  --color-yellow-alpha-100: #6449EC;
+  --color-highlight: #C9A2FF;
+  --color-black-alpha-100: #05030A;
+  --bg-main: #0E0B15;
+  --bg-secondary: #15111F;
+  --bg-tertiary: #1E182F;
+  --bg-additional: #2A2240;
+  --bg-reverse: #1A1528;
+  --text-main: #F3F0FA;
+  --text-secondary: #A9A3BA;
+  --text-accent: #AD9BFF;
+}
+
+/* Ocean — blue with a sky highlight. */
+:root[data-preset="ocean"] {
+  --color-yellow-alpha-100: #1F5FD1;
+  --color-highlight: #38BDF8;
+  --color-black-alpha-100: #0E1A2B;
+  --bg-main: #FFFFFF;
+  --bg-secondary: #F5F8FC;
+  --bg-tertiary: #E6EEFC;
+  --bg-additional: #D2E1FA;
+  --bg-reverse: #0E1A2B;
+  --text-main: #0E1A2B;
+  --text-secondary: #56637A;
+  --text-accent: #1C58C4;
+}
+:root[data-preset="ocean"][data-theme="dark"] {
+  --color-yellow-alpha-100: #2A62D0;
+  --color-highlight: #5CCBFA;
+  --color-black-alpha-100: #02060C;
+  --bg-main: #09101A;
+  --bg-secondary: #0E1724;
+  --bg-tertiary: #132136;
+  --bg-additional: #1B2D48;
+  --bg-reverse: #111B2C;
+  --text-main: #EDF2FA;
+  --text-secondary: #9CA8BB;
+  --text-accent: #7FAEFA;
+}
+
+/* Forest — deep green with a fresh green highlight. */
+:root[data-preset="forest"] {
+  --color-yellow-alpha-100: #14775A;
+  --color-highlight: #4ADE80;
+  --color-black-alpha-100: #0F1F19;
+  --bg-main: #FFFFFF;
+  --bg-secondary: #F5FAF7;
+  --bg-tertiary: #E3F3EA;
+  --bg-additional: #CBE7D8;
+  --bg-reverse: #0F1F19;
+  --text-main: #0F1F19;
+  --text-secondary: #56675F;
+  --text-accent: #126E53;
+}
+:root[data-preset="forest"][data-theme="dark"] {
+  --color-yellow-alpha-100: #137052;
+  --color-highlight: #7BE3A4;
+  --color-black-alpha-100: #020805;
+  --bg-main: #08110D;
+  --bg-secondary: #0D1813;
+  --bg-tertiary: #12241B;
+  --bg-additional: #1A3326;
+  --bg-reverse: #0F1D16;
+  --text-main: #ECF5F0;
+  --text-secondary: #9AAFA4;
+  --text-accent: #5ED3A0;
+}
+
+/* Ember — burnt orange with an amber highlight. */
+:root[data-preset="ember"] {
+  --color-yellow-alpha-100: #C2410C;
+  --color-highlight: #FBBF24;
+  --color-black-alpha-100: #24140D;
+  --bg-main: #FFFFFF;
+  --bg-secondary: #FCF8F5;
+  --bg-tertiary: #FDEDE3;
+  --bg-additional: #F9DAC6;
+  --bg-reverse: #24140D;
+  --text-main: #24140D;
+  --text-secondary: #6C5F57;
+  --text-accent: #B33C0B;
+}
+:root[data-preset="ember"][data-theme="dark"] {
+  --color-yellow-alpha-100: #B83E0C;
+  --color-highlight: #FCC94D;
+  --color-black-alpha-100: #080402;
+  --bg-main: #120C09;
+  --bg-secondary: #1A120E;
+  --bg-tertiary: #261912;
+  --bg-additional: #35231A;
+  --bg-reverse: #1C140F;
+  --text-main: #F8F1EC;
+  --text-secondary: #B4A69C;
+  --text-accent: #FF9A66;
+}
+
+/* Rose — raspberry with a coral highlight. */
+:root[data-preset="rose"] {
+  --color-yellow-alpha-100: #BE2560;
+  --color-highlight: #FB923C;
+  --color-black-alpha-100: #26121B;
+  --bg-main: #FFFFFF;
+  --bg-secondary: #FCF7F9;
+  --bg-tertiary: #FCE7EF;
+  --bg-additional: #F7D1DF;
+  --bg-reverse: #26121B;
+  --text-main: #26121B;
+  --text-secondary: #6E6067;
+  --text-accent: #B32259;
+}
+:root[data-preset="rose"][data-theme="dark"] {
+  --color-yellow-alpha-100: #BC2961;
+  --color-highlight: #FDA772;
+  --color-black-alpha-100: #090306;
+  --bg-main: #130A0E;
+  --bg-secondary: #1B1015;
+  --bg-tertiary: #29141E;
+  --bg-additional: #381C29;
+  --bg-reverse: #1D1117;
+  --text-main: #F9EEF2;
+  --text-secondary: #B8A2AB;
+  --text-accent: #FF8DB7;
+}
+
+/* Graphite — monochrome: near-black accent, neutral greys. */
+:root[data-preset="graphite"] {
+  --color-yellow-alpha-100: #18181B;
+  --color-highlight: #A1A1AA;
+  --color-black-alpha-100: #18181B;
+  --bg-main: #FFFFFF;
+  --bg-secondary: #F7F7F8;
+  --bg-tertiary: #EDEDEF;
+  --bg-additional: #DEDEE2;
+  --bg-reverse: #18181B;
+  --text-main: #18181B;
+  --text-secondary: #5F5F68;
+  --text-accent: #3F3F46;
+}
+:root[data-preset="graphite"][data-theme="dark"] {
+  --color-yellow-alpha-100: #63636B;
+  --color-highlight: #D4D4D8;
+  --color-black-alpha-100: #000000;
+  --bg-main: #0B0B0C;
+  --bg-secondary: #121214;
+  --bg-tertiary: #1A1A1D;
+  --bg-additional: #26262A;
+  --bg-reverse: #161618;
+  --text-main: #F4F4F5;
+  --text-secondary: #A1A1AA;
+  --text-accent: #E4E4E7;
+}

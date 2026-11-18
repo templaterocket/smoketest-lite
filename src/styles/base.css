@@ -1,0 +1,12 @@
+/* Preview reset. Components bring their own layout; values come from theme/tokens.css only. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; font-family: var(--font-family-body); -webkit-font-smoothing: antialiased; background: var(--bg-main); color: var(--text-main); }
+h1, h2, h3, h4, h5, h6, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+button, input, textarea, select { font: inherit; color: inherit; margin: 0; }
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; max-width: 100%; }
+
+/* The hidden attribute wins over display utilities (flex, grid…), as in Tailwind's preflight. */
+[hidden]:where(:not([hidden="until-found"])) { display: none !important; }

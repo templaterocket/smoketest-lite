@@ -1,0 +1,107 @@
+---
+/**
+ * The hero, kept short: the offer pill, heading, description, the primary call to action and the
+ * product shot. A secondary CTA shows only when the primary is a button (a form fills the row);
+ * the signup counter lives in the closing panel (CtaPanel).
+ * Started from the library's HeroHeader82 (hero-headers-145): its class names and styles are
+ * kept, so the craft layer still applies. The calls to action come from site.config.ts.
+ */
+import Cta from "../cta/Cta.astro";
+import { ctaFits } from "../../lib/layout";
+import { site } from "../../site.config";
+
+interface Props {
+  heading: string;
+  description: string;
+  imageAlt: string;
+}
+
+const { heading, description, imageAlt } = Astro.props;
+const { primary } = site.cta;
+// A link to a homepage section the layout leaves out (e.g. #how-it-works in "minimal") is dropped.
+const secondary = ctaFits(site.cta.secondary) ? site.cta.secondary : undefined;
+// A form takes the whole row and stands alone.
+const formFirst = primary.type === "waitlist";
+---
+<section class="hero-header-82">
+  <div class="hero-header-82__body">
+    <div class="hero-header-82__container">
+      <div class="hero-header-82__column">
+        <div class="hero-header-82__content">
+          <h1 class="hero-header-82__heading">{heading}</h1>
+          <p class="hero-header-82__description">{description}</p>
+        </div>
+        <div id="get-started" class:list={["hero-header-82__actions", formFirst && "hero-header-82__actions--form"]}>
+          <Cta cta={primary} id="hero-cta" />
+          {secondary && !formFirst && <Cta cta={secondary} id="hero-cta-secondary" variant="secondary" />}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-header-82__image" role="img" aria-label={imageAlt}></div>
+</section>
+
+<style>
+  .hero-header-82 {
+    background: var(--bg-main);
+    color: var(--text-main);
+  }
+  .hero-header-82__body {
+    padding: var(--space-section-vertical-l) var(--space-section-horizontal-l);
+  }
+  .hero-header-82__container {
+    width: 100%;
+    max-width: var(--size-container-l);
+    margin-inline: auto;
+  }
+  .hero-header-82__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+    max-width: var(--size-measure-l);
+  }
+  .hero-header-82__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-20);
+  }
+  .hero-header-82__heading {
+    margin: var(--space-0);
+    color: var(--text-main);
+    font-size: var(--font-titles-h1-size);
+    line-height: var(--font-titles-h1-line-height);
+    font-weight: 700;
+  }
+  .hero-header-82__description {
+    margin: var(--space-0);
+    color: var(--text-main);
+    font-size: var(--font-body-l-size);
+    line-height: var(--font-body-l-line-height);
+  }
+  .hero-header-82__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-self: flex-start;
+    width: fit-content;
+    max-width: 100%;
+    gap: var(--space-16);
+  }
+  .hero-header-82__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--bg-tertiary);
+  }
+
+  @media (min-width: 768px) {
+    .hero-header-82__column {
+      gap: var(--space-32);
+    }
+    .hero-header-82__content {
+      gap: var(--space-24);
+    }
+    .hero-header-82__description {
+      font-size: var(--font-body-xl-size);
+      line-height: var(--font-body-xl-line-height);
+    }
+  }
+</style>

@@ -1,0 +1,66 @@
+/**
+ * Tailwind 4 for the template's own components. The theme maps Tailwind onto tokens.css,
+ * so `bg-surface`, `text-ink`, `border-line`, `font-display`, `text-h2`, `rounded-lg` follow
+ * the token values and change with them. Only the theme and the utilities are imported:
+ * base.css is the reset, so Tailwind's preflight stays out.
+ */
+@layer theme, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme inline {
+  --color-*: initial;
+  --color-surface: var(--bg-main);
+  --color-surface-secondary: var(--bg-secondary);
+  --color-surface-tertiary: var(--bg-tertiary);
+  --color-surface-additional: var(--bg-additional);
+  --color-surface-reverse: var(--bg-reverse);
+  --color-accent: var(--bg-accent);
+  --color-accent-soft: var(--bg-accent-secondary);
+  --color-ink: var(--text-main);
+  --color-ink-secondary: var(--text-secondary);
+  --color-ink-tertiary: var(--text-tertiary);
+  --color-ink-reverse: var(--text-reverse);
+  --color-ink-reverse-secondary: var(--text-reverse-secondary);
+  --color-ink-accent: var(--text-accent);
+  --color-line: var(--line-tertiary);
+  --color-line-soft: var(--line-additional);
+  --color-line-strong: var(--line-secondary);
+  --color-line-accent: var(--line-accent);
+  --color-white: #FFFFFF;
+  --color-danger: var(--text-danger);
+  --color-success: #1F8A5B;
+
+  --font-*: initial;
+  --font-sans: var(--font-family-body);
+  --font-display: var(--font-family-display);
+  --font-mono: var(--font-family-mono);
+
+  --text-*: initial;
+  --text-h1: var(--font-titles-h1-size);
+  --text-h1--line-height: var(--font-titles-h1-line-height);
+  --text-h2: var(--font-titles-h2-size);
+  --text-h2--line-height: var(--font-titles-h2-line-height);
+  --text-h3: var(--font-titles-h3-size);
+  --text-h3--line-height: var(--font-titles-h3-line-height);
+  --text-h4: var(--font-titles-h4-size);
+  --text-h4--line-height: var(--font-titles-h4-line-height);
+  --text-xl: var(--font-body-xl-size);
+  --text-xl--line-height: var(--font-body-xl-line-height);
+  --text-lg: var(--font-body-l-size);
+  --text-lg--line-height: var(--font-body-l-line-height);
+  --text-md: var(--font-body-m-size);
+  --text-md--line-height: var(--font-body-m-line-height);
+  --text-sm: var(--font-body-s-size);
+  --text-sm--line-height: var(--font-body-s-line-height);
+  --text-xs: var(--font-body-xs-size);
+  --text-xs--line-height: var(--font-body-xs-line-height);
+
+  --radius-*: initial;
+  --radius-sm: var(--radius-2);
+  --radius-md: var(--radius-4);
+  --radius-lg: var(--radius-12);
+  --radius-xl: var(--radius-16);
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}

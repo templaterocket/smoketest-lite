@@ -1,0 +1,39 @@
+---
+/**
+ * The honest counter: the real number of confirmed signups from the Worker (/api/count), shown
+ * only once it passes leads.counter.threshold. Below that, or with another provider, it renders
+ * nothing — the template never shows an invented number.
+ */
+import { site } from "../../site.config";
+
+interface Props {
+  tone?: "light" | "dark";
+}
+
+const { tone = "light" } = Astro.props;
+const { provider, counter } = site.leads;
+const on = provider.id === "cloudflare" && counter.enabled;
+---
+{on && (
+  <p data-signup-count hidden class:list={["inline-flex items-center gap-2 text-md", tone === "dark" ? "text-white/90" : "text-ink-secondary"]}>
+    <span class="size-2 rounded-full bg-success" aria-hidden="true"></span>
+    <span><strong data-signup-count-number class:list={["font-semibold", tone === "dark" ? "text-white" : "text-ink"]}></strong> {counter.label}</span>
+  </p>
+)}
+
+<script>
+  const counters = document.querySelectorAll<HTMLElement>("[data-signup-count]");
+  if (counters.length > 0) {
+    fetch("/api/count")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body: { count: number | null } | null) => {
+        if (!body || body.count === null) return;
+        for (const counter of counters) {
+          const number = counter.querySelector("[data-signup-count-number]");
+          if (number) number.textContent = body.count.toLocaleString("en");
+          counter.hidden = false;
+        }
+      })
+      .catch(() => undefined);
+  }
+</script>

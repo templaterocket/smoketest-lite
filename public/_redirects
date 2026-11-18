@@ -1,0 +1,7 @@
+# Redirects for Cloudflare (Workers static assets) and Netlify, copied into dist/ by the build.
+# Keep these in step with `redirects` in astro.config.mjs (the source of truth) and vercel.json:
+# the build warns when a rule is missing here. One rule per line: <from> <to> <status>.
+# Write the status: Cloudflare defaults to 302, Netlify to 301. List both forms of an old path,
+# with and without the trailing slash, and point to the new page with its slash:
+#   /old-pricing    /pricing/  301
+#   /old-pricing/   /pricing/  301

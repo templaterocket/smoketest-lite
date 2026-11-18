@@ -1,0 +1,31 @@
+---
+/**
+ * An inner page: the shell, the site's navbar and footer, and a main column as wide as the
+ * homepage's sections (--size-container-l plus the craft gutter), so every page lines up with
+ * the navbar and the footer. The homepage composes its own sections; every other page uses this.
+ */
+import Base from "./Base.astro";
+import SiteHeader from "../components/site/SiteHeader.astro";
+import SiteFooter from "../components/site/SiteFooter.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+}
+---
+<Base {...Astro.props}>
+  <SiteHeader />
+  <main class="page-main mx-auto w-full pt-14 pb-24 sm:pt-20">
+    <slot />
+  </main>
+  <SiteFooter />
+</Base>
+
+<style is:global>
+  .page-main {
+    max-width: calc(var(--size-container-l) + 2 * var(--craft-gutter, 16px));
+    padding-inline: var(--craft-gutter, 16px);
+  }
+</style>

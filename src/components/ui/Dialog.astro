@@ -1,0 +1,46 @@
+---
+/**
+ * A modal on the native <dialog>: focus trap, Escape and the top layer come from the browser.
+ * Any element with data-dialog-open="<id>" opens it; a click on the backdrop closes it.
+ */
+interface Props {
+  id: string;
+  title: string;
+  description?: string;
+}
+
+const { id, title, description } = Astro.props;
+---
+<dialog
+  id={id}
+  aria-labelledby={`${id}-title`}
+  class="m-auto w-[min(100%-32px,520px)] max-h-[calc(100dvh-32px)] overflow-y-auto rounded-xl border border-line bg-surface p-0 text-ink shadow-[0_40px_80px_-30px_var(--color-black-alpha-40)] backdrop:bg-[rgba(27,20,38,0.45)] backdrop:backdrop-blur-[2px]"
+>
+  <div class="flex flex-col gap-6 p-6 sm:p-8">
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex flex-col gap-2">
+        <h2 id={`${id}-title`} class="font-display text-h4 font-semibold tracking-[-0.02em] text-ink">{title}</h2>
+        {description && <p class="text-md text-ink-secondary">{description}</p>}
+      </div>
+      <button type="button" data-dialog-close class="-mr-2 -mt-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-md border-0 bg-transparent text-ink-secondary transition-colors hover:bg-surface-secondary hover:text-ink" aria-label="Close">
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </div>
+    <slot />
+  </div>
+</dialog>
+
+<script>
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const opener = target?.closest<HTMLElement>("[data-dialog-open]");
+    if (opener) {
+      const dialog = document.getElementById(opener.dataset.dialogOpen ?? "");
+      if (dialog instanceof HTMLDialogElement) dialog.showModal();
+      return;
+    }
+    if (target?.closest("[data-dialog-close]")) target.closest("dialog")?.close();
+    // A click on the backdrop lands on the <dialog> itself.
+    else if (target instanceof HTMLDialogElement) target.close();
+  });
+</script>

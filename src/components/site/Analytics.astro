@@ -1,0 +1,62 @@
+---
+/**
+ * Loads the analytics provider from site.config.ts — but not when the visitor has Do Not Track
+ * or Global Privacy Control on (analytics.respectDoNotTrack), and GA4 (which sets cookies) only
+ * after consent. Also wires the template's events: lead_submitted, cta_click, plan_intent.
+ */
+import { site } from "../../site.config";
+
+const { provider, respectDoNotTrack } = site.analytics;
+const loader = { provider, respectDoNotTrack };
+---
+{provider.id !== "none" && (
+  <script is:inline define:vars={{ loader }}>
+    (() => {
+      const nav = navigator;
+      if (loader.respectDoNotTrack && (nav.doNotTrack === "1" || nav.globalPrivacyControl === true)) return;
+      const add = (src, attrs) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.defer = true;
+        for (const [key, value] of Object.entries(attrs)) script.setAttribute(key, value);
+        document.head.append(script);
+      };
+      const p = loader.provider;
+      if (p.id === "plausible") {
+        window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
+        add(p.src, { "data-domain": p.domain });
+      } else if (p.id === "umami") {
+        add(p.src, { "data-website-id": p.websiteId });
+      } else if (p.id === "fathom") {
+        add(p.src, { "data-site": p.siteId });
+      } else if (p.id === "cloudflare") {
+        add("https://static.cloudflareinsights.com/beacon.min.js", { "data-cf-beacon": JSON.stringify({ token: p.token }) });
+      } else if (p.id === "ga4") {
+        // GA4 sets cookies: it loads only after "Accept" in the consent banner.
+        const load = () => {
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { window.dataLayer.push(arguments); };
+          window.gtag("js", new Date());
+          window.gtag("config", p.measurementId, { anonymize_ip: true });
+          add(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(p.measurementId)}`, {});
+        };
+        let choice = null;
+        try { choice = localStorage.getItem("smoketest:consent"); } catch {}
+        if (choice === "granted") load();
+        else document.addEventListener("consent:granted", load, { once: true });
+      }
+    })();
+  </script>
+)}
+
+<script>
+  import { track } from "../../lib/analytics";
+
+  document.addEventListener("lead:sent", (event) => {
+    track("lead_submitted", { cta: (event as CustomEvent<{ cta: string }>).detail.cta });
+  });
+  document.addEventListener("click", (event) => {
+    const link = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-cta]") : null;
+    if (link) track("cta_click", { type: link.dataset.cta ?? "link" });
+  });
+</script>

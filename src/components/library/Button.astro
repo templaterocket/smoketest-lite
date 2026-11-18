@@ -1,0 +1,167 @@
+---
+/**
+ * Button — Relume kit primitive. Renders <a> when `href` is given, else <button>.
+ * Variants: Style (variant), Small (size), Alternate (alternate, for dark surfaces),
+ * Icon position (iconPosition; "only" keeps `label` as the accessible name).
+ */
+interface Props {
+  label?: string;
+  href?: string;
+  variant?: "primary" | "secondary" | "tertiary" | "link";
+  size?: "default" | "small";
+  alternate?: boolean;
+  iconPosition?: "none" | "leading" | "trailing" | "only";
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+}
+
+const {
+  label = "Button",
+  href,
+  variant = "primary",
+  size = "default",
+  alternate = false,
+  iconPosition = "none",
+  type = "button",
+  disabled = false,
+} = Astro.props;
+
+const classes = [
+  "button",
+  `button--${variant}`,
+  size === "small" && variant !== "link" && "button--small",
+  alternate && "button--alternate",
+  iconPosition === "only" && "button--icon-only",
+];
+const showIcon = iconPosition !== "none";
+const iconOnly = iconPosition === "only";
+const Tag = href ? "a" : "button";
+// One attribute bag for either tag; typed loosely because <a> and <button> take different ones.
+const attrs: Record<string, string | boolean | undefined> = href
+  ? { href: disabled ? undefined : href, "aria-disabled": disabled ? "true" : undefined }
+  : { type, disabled };
+---
+<Tag class:list={classes} {...attrs} aria-label={iconOnly ? label : undefined}>
+  {showIcon && iconPosition !== "trailing" && (
+    <svg class="button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+  )}
+  {!iconOnly && <span class="button__label">{label}</span>}
+  {iconPosition === "trailing" && (
+    <svg class="button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+  )}
+</Tag>
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-12);
+    padding: var(--space-12) var(--space-24);
+    border: 1px solid var(--line-accent);
+    background: var(--bg-invisible);
+    color: var(--text-main);
+    font: inherit;
+    font-size: var(--font-body-l-size);
+    line-height: var(--font-body-l-line-height);
+    font-weight: 400;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: opacity 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+  }
+  .button__icon {
+    flex: none;
+    width: var(--space-24);
+    height: var(--space-24);
+    color: var(--icon-main);
+  }
+
+  /* Style */
+  .button--primary {
+    background: var(--bg-accent);
+    border-color: var(--line-accent);
+    color: var(--text-reverse);
+  }
+  .button--primary .button__icon { color: var(--icon-reverse); }
+  .button--secondary {
+    border-color: var(--line-accent);
+  }
+  .button--tertiary {
+    border-color: var(--bg-invisible);
+  }
+  .button--link {
+    gap: var(--space-8);
+    padding: var(--space-0);
+    border-color: var(--bg-invisible);
+  }
+
+  /* Small */
+  .button--small {
+    padding: var(--space-8) var(--space-20);
+  }
+
+  /* Icon only */
+  .button--icon-only {
+    padding: var(--space-12);
+  }
+  .button--small.button--icon-only {
+    padding: var(--space-8);
+  }
+  .button--link.button--icon-only {
+    padding: var(--space-0);
+  }
+
+  /* Alternate (on dark surfaces) */
+  .button--alternate {
+    border-color: var(--line-main);
+    color: var(--text-reverse);
+  }
+  .button--alternate .button__icon { color: var(--icon-reverse); }
+  .button--alternate.button--primary {
+    background: var(--bg-main);
+    color: var(--text-main);
+  }
+  .button--alternate.button--primary .button__icon { color: var(--icon-main); }
+  .button--alternate.button--tertiary,
+  .button--alternate.button--link {
+    border-color: var(--bg-invisible);
+  }
+
+  /* States */
+  .button:hover {
+    background: var(--bg-secondary);
+  }
+  .button--primary:hover {
+    background: var(--bg-accent);
+    opacity: 0.85;
+  }
+  .button--alternate:hover {
+    background: var(--bg-main-transparent);
+  }
+  .button--alternate.button--primary:hover {
+    background: var(--bg-main);
+  }
+  .button--link:hover,
+  .button--alternate.button--link:hover {
+    background: var(--bg-invisible);
+    text-decoration: underline;
+  }
+  .button:focus-visible {
+    outline: 1px solid var(--line-accent);
+    outline-offset: var(--space-4);
+  }
+  .button--alternate:focus-visible {
+    outline-color: var(--line-main);
+  }
+  .button:active {
+    transform: scale(0.98);
+  }
+  .button:disabled,
+  .button[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+  }
+</style>

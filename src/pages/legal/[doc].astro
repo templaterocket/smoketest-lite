@@ -1,0 +1,44 @@
+---
+/**
+ * The legal pack: one page per document in use (src/lib/legal.ts), from src/content/legal/*.md
+ * with {{TOKENS}} filled from site.config.ts. On wide screens the table of contents sits in a
+ * sticky column beside the text, so the page spans the same container as the homepage.
+ */
+import { getEntry, render } from "astro:content";
+import Page from "../../layouts/Page.astro";
+import FillTokens from "../../components/site/FillTokens.astro";
+import { legalDocs } from "../../lib/legal";
+import { site } from "../../site.config";
+
+export function getStaticPaths() {
+  return legalDocs.map((doc) => ({ params: { doc: doc.slug } }));
+}
+
+const entry = await getEntry("legal", Astro.params.doc ?? "");
+if (!entry) throw new Error(`E_LEGAL_MISSING: src/content/legal/${Astro.params.doc}.md`);
+const { Content, headings } = await render(entry);
+const sections = headings.filter((heading) => heading.depth === 2);
+const toc = sections.length > 2;
+---
+<Page title={`${entry.data.title} — ${site.product.name}`} description={entry.data.description}>
+  <article class="flex flex-col gap-10">
+    <header class="flex flex-col gap-4">
+      <p class="font-mono text-[16px] uppercase tracking-[0.08em] text-ink-accent">Legal</p>
+      <h1 class="font-display text-h2 font-medium tracking-[-0.03em] text-ink">{entry.data.title}</h1>
+      {entry.data.description && <p class="max-w-[720px] text-lg text-ink-secondary">{entry.data.description}</p>}
+    </header>
+    <div class:list={["grid gap-8 border-t border-line pt-10", toc && "lg:grid-cols-[280px_1fr] lg:gap-16"]}>
+      {toc && (
+        <nav aria-label="On this page" class="h-fit rounded-lg border border-line bg-surface-secondary px-5 py-4 lg:sticky lg:top-24">
+          <p class="mb-2 text-sm font-semibold uppercase tracking-[0.06em] text-ink">On this page</p>
+          <ul class="flex flex-col gap-1.5">
+            {sections.map((heading) => <li><a class="text-md text-ink-secondary hover:text-ink-accent" href={`#${heading.slug}`}>{heading.text}</a></li>)}
+          </ul>
+        </nav>
+      )}
+      <div class="legal-prose">
+        <FillTokens><Content /></FillTokens>
+      </div>
+    </div>
+  </article>
+</Page>

@@ -1,0 +1,91 @@
+---
+/**
+ * The homepage: the hero with the signup form, then the FAQ. The copy lives in the two constants
+ * below; the call to action and where leads go come from src/site.config.ts. The hero's product
+ * shot is drawn from design/mockups/hero-product.svg in the preset's colours, light and dark.
+ */
+import type { ComponentProps } from "astro/types";
+import Base from "../layouts/Base.astro";
+import SiteHeader from "../components/site/SiteHeader.astro";
+import SiteFooter from "../components/site/SiteFooter.astro";
+import Hero from "../components/sections/Hero.astro";
+import Faq2 from "../components/library/Faq2.astro";
+import { site } from "../site.config";
+import { siteUrl } from "../lib/url";
+
+/** The hero's product shot, light and dark (see the style block at the end). */
+const mockup = (name: string): string => `display: contents; --mockup: url("/images/${name}.svg"); --mockup-dark: url("/images/${name}-dark.svg")`;
+
+const hero: ComponentProps<typeof Hero> = {
+  "heading": "Measure demand before you build",
+  "description": "A waitlist page, a privacy policy draft and cookieless analytics in one Astro template, set up by your coding agent.",
+  "imageAlt": "A founder's waitlist page built with Smoketest, beside its settings: colour preset, light and dark, and where signups go"
+};
+const faq: ComponentProps<typeof Faq2> = {
+  "look": "card",
+  "heading": "Questions",
+  "description": "Straight answers, including what Smoketest won't do.",
+  "questions": [
+    {
+      "question": "Will Smoketest tell me if my idea is good?",
+      "answer": "No. It gives you a page that collects signups, and your analytics counts the visits. What the numbers mean is your call.",
+      "open": true
+    },
+    {
+      "question": "Where do the signups go?",
+      "answer": "To the form service you choose, straight from the visitor's browser: Web3Forms emails each one to you, or a webhook passes it to Zapier, Make, n8n or your own API. The site itself stores nothing."
+    },
+    {
+      "question": "Does the privacy policy replace a lawyer?",
+      "answer": "No. It's a starting-point draft filled from your config, not legal advice: have a person check it before launch."
+    },
+    {
+      "question": "Which coding agents does it work with?",
+      "answer": "Any agent that reads AGENTS.md or CLAUDE.md, such as Claude Code, Cursor or Codex. The config is checked at build time with typed errors, and the brand skill changes the look."
+    },
+    {
+      "question": "What does it cost to run?",
+      "answer": "Nothing to start: it's a static site for the free tier of Cloudflare, Netlify or Vercel, and Web3Forms has a free plan."
+    },
+    {
+      "question": "Is it really free?",
+      "answer": "Yes. It's open source under the MIT license: use it for as many sites as you like, commercial ones included."
+    }
+  ],
+  "ctaLabel": "Ask a question",
+  "ctaHref": `mailto:${site.legal.contactEmail}`
+};
+const jsonLd: Record<string, unknown>[] = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: (faq.questions ?? []).map((q) => ({ "@type": "Question", name: q.question, acceptedAnswer: { "@type": "Answer", text: q.answer } })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: site.product.name,
+    description: site.product.description,
+    ...(siteUrl && { url: siteUrl.toString() }),
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Web",
+  },
+];
+---
+<Base title={site.seo.title ?? `${site.product.name} — ${site.product.description}`} jsonLd={jsonLd}>
+  <SiteHeader />
+  <div data-section="2" style={mockup("hero-product")}>
+    <Hero {...hero} />
+  </div>
+  <div data-section="8" style="display: contents">
+    <span id="faq" aria-hidden="true"></span>
+    <Faq2 {...faq} />
+  </div>
+  <SiteFooter />
+</Base>
+
+<!-- The product shot: drawn from design/mockups/ in the preset's colours by src/pages/images/[mockup].svg.ts. -->
+<style is:global>
+  [data-section="2"] .hero-header-82__image { background: var(--mockup) center / cover no-repeat; }
+  :root[data-theme="dark"] [data-section="2"] .hero-header-82__image { background-image: var(--mockup-dark); }
+</style>

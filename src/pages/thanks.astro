@@ -1,0 +1,97 @@
+---
+/**
+ * Where a signup lands (leads.successPath), and where the Worker's email links return. The page
+ * is static; the browser picks the message from ?state= and ?cta=:
+ *   check-email   — double opt-in: the confirmation email is on its way;
+ *   confirmed     — confirmed: place in the queue and the referral link (?code=);
+ *   link-invalid  — an old or used confirmation link;
+ *   unsubscribed  — after the unsubscribe link.
+ */
+import Base from "../layouts/Base.astro";
+import Button from "../components/ui/Button.astro";
+import { site } from "../site.config";
+
+// The queue and referrals live in the Worker: only the cloudflare provider has them.
+const referrals = site.leads.provider.id === "cloudflare" ? site.leads.referrals : { ...site.leads.referrals, enabled: false };
+---
+<Base title={`Thanks — ${site.product.name}`} noindex>
+  <main class="grid min-h-dvh place-items-center px-4 py-16">
+    <div class="flex w-full max-w-[560px] flex-col items-center gap-6 rounded-xl border border-line bg-surface px-6 py-12 text-center shadow-[0_30px_60px_-30px_var(--color-black-alpha-30)] sm:px-12">
+      <span class="grid size-14 place-items-center rounded-lg bg-accent-soft text-ink-accent" aria-hidden="true">
+        <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+      </span>
+      <div class="flex flex-col gap-3">
+        <h1 data-thanks-title class="font-display text-h3 font-medium tracking-[-0.03em] text-balance text-ink">You’re on the list</h1>
+        <p data-thanks-text class="text-lg text-ink-secondary text-pretty">Thanks for your interest in {site.product.name}. We’ll email you when it’s ready.</p>
+      </div>
+
+      {referrals.enabled && (
+        <div data-referral hidden class="flex w-full flex-col gap-4 rounded-lg bg-surface-secondary p-5 text-left">
+          <p class="text-md text-ink-secondary"><span class="font-display text-h4 font-semibold text-ink" data-position></span> <span data-position-note></span></p>
+          <div class="flex flex-col gap-2">
+            <label class="text-md font-medium text-ink" for="referral-link">Move up: share your link</label>
+            <div class="flex gap-2">
+              <input id="referral-link" class="min-h-[44px] w-full min-w-0 rounded-md border border-line bg-surface px-3 font-mono text-sm text-ink" readonly data-referral-link />
+              <Button label="Copy" variant="secondary" size="small" class="shrink-0" data-copy />
+            </div>
+            <p class="text-sm text-ink-secondary">Each friend who confirms moves you up {referrals.positionsPerReferral} places (up to {referrals.maxCredited} friends). <span data-referral-count></span></p>
+          </div>
+        </div>
+      )}
+
+      <Button label={`Back to ${site.product.name}`} href="/" variant="secondary" />
+    </div>
+  </main>
+</Base>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const kind = params.get("cta") ?? "waitlist";
+  const state = params.get("state");
+  const title = document.querySelector("[data-thanks-title]");
+  const text = document.querySelector("[data-thanks-text]");
+  const set = (heading: string, body: string): void => {
+    if (title) title.textContent = heading;
+    if (text) text.textContent = body;
+  };
+
+  if (state === "check-email") set("Check your inbox", "We sent you a confirmation link. Click it to finish signing up — until then you’re not on the list. Nothing there? Check spam, or sign up again to resend it.");
+  else if (state === "link-invalid") set("That link has expired", "It was already used or is too old. If you signed up, you’re all set; otherwise sign up again for a fresh link.");
+  else if (state === "unsubscribed") set("You’re unsubscribed", "You won’t get any more emails from us. Changed your mind? Just sign up again.");
+  else if (kind === "access") set("Request received", "Thanks for the details. We read every request and will email you when there’s a spot.");
+  else if (kind === "contact") set("Message sent", "Thanks for writing. We’ll reply to the email you gave us.");
+  else if (state === "confirmed") set("You’re on the list", "Your email is confirmed. We’ll write when it’s ready.");
+
+  // Confirmed signups with a referral code see their real place in the queue.
+  const code = params.get("code");
+  const box = document.querySelector<HTMLElement>("[data-referral]");
+  if (code && box) {
+    const link = new URL("/", location.origin);
+    link.searchParams.set("ref", code);
+    const input = box.querySelector<HTMLInputElement>("[data-referral-link]");
+    if (input) input.value = link.toString();
+    box.querySelector("[data-copy]")?.addEventListener("click", async (event) => {
+      const button = event.currentTarget as HTMLElement;
+      const label = button.querySelector(".button__label");
+      try {
+        await navigator.clipboard.writeText(link.toString());
+        if (label) label.textContent = "Copied";
+      } catch {
+        input?.select();
+      }
+    });
+    fetch(`/api/status?code=${encodeURIComponent(code)}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((status: { position: number; referrals: number } | null) => {
+        if (!status) return;
+        const position = box.querySelector("[data-position]");
+        const note = box.querySelector("[data-position-note]");
+        const count = box.querySelector("[data-referral-count]");
+        if (position) position.textContent = `#${status.position}`;
+        if (note) note.textContent = "is your place in line right now.";
+        if (count) count.textContent = status.referrals > 0 ? `${status.referrals} friend${status.referrals === 1 ? "" : "s"} joined so far.` : "";
+        box.hidden = false;
+      })
+      .catch(() => undefined);
+  }
+</script>

@@ -1,0 +1,39 @@
+---
+/**
+ * The template's button. Same classes as the library Button (button, button--primary…), so the
+ * craft layer styles both the same; unlike it, this one passes any extra attribute through
+ * (data-dialog-open, target, form…). Renders <a> when `href` is set, else <button>.
+ */
+import type { HTMLAttributes } from "astro/types";
+
+type Props = Omit<HTMLAttributes<"button"> & HTMLAttributes<"a">, "class"> & {
+  label: string;
+  href?: string;
+  variant?: "primary" | "secondary" | "link";
+  size?: "default" | "small";
+  /** Trailing arrow; the link variant always has one. */
+  arrow?: boolean;
+  class?: string;
+};
+
+const { label, href, variant = "primary", size = "default", arrow = variant === "link", class: className, type = "button", ...rest } = Astro.props;
+const external = href !== undefined && /^https?:\/\//u.test(href);
+const classes = [
+  "button",
+  `button--${variant}`,
+  size === "small" && variant !== "link" && "button--small",
+  "inline-flex items-center justify-center border border-solid border-transparent font-sans no-underline whitespace-nowrap cursor-pointer select-none",
+  className,
+];
+---
+{href ? (
+  <a href={href} class:list={classes} target={external ? "_blank" : undefined} rel={external ? "noopener" : undefined} {...rest}>
+    <span class="button__label">{label}</span>
+    {arrow && <svg class="button__icon size-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>}
+  </a>
+) : (
+  <button type={type} class:list={classes} {...rest}>
+    <span class="button__label">{label}</span>
+    {arrow && <svg class="button__icon size-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>}
+  </button>
+)}

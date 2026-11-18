@@ -1,0 +1,44 @@
+---
+/**
+ * Company logo — Relume kit primitive: a neutral wide company mark. Alternate for dark surfaces.
+ * The name (`label`, the site passes product.name) is in the markup too; the craft layer shows
+ * it beside its icon instead of the neutral mark.
+ */
+interface Props {
+  alternate?: boolean;
+  label?: string;
+}
+
+const { alternate = false, label = "Company logo" } = Astro.props;
+---
+<span class:list={["company-logo", alternate && "company-logo--alternate"]} role="img" aria-label={label}>
+  <svg class="company-logo__mark" viewBox="0 0 70 36" fill="currentColor" aria-hidden="true">
+    <path d="M0 10h19v16H0z" />
+    <path d="M22 5.5h19v25H22z" opacity="0.85" />
+    <path d="M44 10h19v16H44z" />
+    <path d="M48 27h22v9H48z" opacity="0.6" />
+    <path d="M2 0h15v9H2z" opacity="0.6" />
+  </svg>
+  <span class="company-logo__name" aria-hidden="true">{label}</span>
+</span>
+
+<style>
+  .company-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--space-72) + var(--space-12));
+    aspect-ratio: 84 / 36;
+    color: var(--icon-main);
+  }
+  .company-logo--alternate {
+    color: var(--icon-reverse);
+  }
+  .company-logo__mark {
+    width: 83%;
+    height: 100%;
+  }
+  .company-logo__name {
+    display: none;
+  }
+</style>

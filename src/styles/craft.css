@@ -1,0 +1,786 @@
+/**
+ * Craft layer — the site's visual polish on top of the library sections, after the Forma
+ * reference (type, colour bands, buttons, panels) and the Nodity reference (ASCII pointer
+ * background, wave panels, tilt, scramble). Every colour comes from the tokens of the active
+ * preset and theme (tokens.css, presets.css): the gradients, glows and shadows below mix the
+ * accent, highlight and ink with color-mix(), so they follow a rebrand and the dark theme.
+ * Fonts come from the pair in fonts.css.
+ *
+ * Every rule is prefixed with `body.craft` so it outranks the components' scoped styles
+ * (`.x[data-astro-cid-…]`) without editing them: the library sections stay as `apply` copied
+ * them, and `website-toolkit-builder apply` can still re-run on the plan. This file, the
+ * layout and src/scripts/fx/ are the site's own and apply never rewrites them.
+ */
+
+body.craft {
+  --craft-display: var(--font-family-display);
+  --craft-mono: var(--font-family-mono);
+  --craft-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The preset's colours, and the blends the Forma look is made of. */
+  --craft-accent: var(--bg-accent);
+  --craft-accent-2: color-mix(in srgb, var(--craft-accent), var(--color-highlight));
+  --craft-ink: var(--color-black-alpha-100);
+  --craft-glow: color-mix(in srgb, var(--color-highlight) 60%, white);
+  --craft-shadow-tint: color-mix(in srgb, var(--craft-accent) 30%, var(--craft-ink));
+  --craft-violet: var(--craft-accent);
+  --craft-violet-text: linear-gradient(90deg, var(--craft-accent) 0%, var(--craft-accent-2) 50%, var(--color-highlight) 100%);
+  --craft-button: linear-gradient(180deg, color-mix(in srgb, var(--craft-accent) 92%, white) 0%, color-mix(in srgb, var(--craft-accent) 92%, black) 100%);
+  --craft-panel-violet:
+    radial-gradient(70% 60% at 100% 0%, color-mix(in srgb, var(--craft-glow) 55%, transparent) 0%, transparent 65%),
+    radial-gradient(60% 60% at 0% 100%, color-mix(in srgb, var(--color-highlight) 26%, transparent) 0%, transparent 70%),
+    linear-gradient(150deg, color-mix(in srgb, var(--craft-accent) 60%, black) 0%, color-mix(in srgb, var(--craft-accent) 85%, black) 52%, var(--craft-accent) 100%);
+  --craft-panel-dark:
+    radial-gradient(60% 70% at 100% 0%, color-mix(in srgb, color-mix(in srgb, var(--craft-accent) 85%, white) 32%, transparent) 0%, transparent 70%),
+    radial-gradient(50% 60% at 0% 100%, color-mix(in srgb, var(--color-highlight) 12%, transparent) 0%, transparent 70%),
+    var(--bg-reverse);
+  --craft-shadow-card: 0 1px 2px color-mix(in srgb, var(--craft-ink) 4%, transparent), 0 12px 32px -12px color-mix(in srgb, var(--craft-shadow-tint) 12%, transparent);
+  --craft-shadow-lift: 0 1px 2px color-mix(in srgb, var(--craft-ink) 5%, transparent), 0 24px 48px -20px color-mix(in srgb, var(--craft-shadow-tint) 22%, transparent);
+  --craft-gutter: 16px;
+  /* The vertical rhythm: every section's top and bottom padding (the library sections read it
+     through --space-section-vertical-l), so two sections sit 2 × this apart. */
+  --craft-section-space: 72px;
+  --space-section-vertical-l: var(--craft-section-space);
+  /* No text on the site is smaller than 16px: the small body steps (text-xs, text-sm, text-md
+     and the library's s/m sizes) all resolve to 16px; hierarchy comes from colour and weight. */
+  --font-body-m-size: 16px;
+  --font-body-m-line-height: 24px;
+  --font-body-s-size: 16px;
+  --font-body-s-line-height: 24px;
+  --font-body-xs-size: 16px;
+  --font-body-xs-line-height: 24px;
+  font-feature-settings: var(--font-body-features);
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+@media (min-width: 768px) { body.craft { --craft-gutter: 24px; --craft-section-space: 128px; } }
+/* On a dark page, shadows read as depth only when they are black and stronger. */
+:root[data-theme="dark"] body.craft {
+  --craft-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -12px rgba(0, 0, 0, 0.6);
+  --craft-shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.45), 0 24px 48px -20px rgba(0, 0, 0, 0.75);
+}
+
+body.craft ::selection { background: color-mix(in srgb, var(--line-accent) 22%, transparent); }
+
+/* Anchors (#get-started, #how-it-works) land below the sticky navbar. */
+html { scroll-padding-top: 96px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+/* A signup form in place of buttons: full row, centred, the second CTA as a link below it. */
+body.craft :is(.hero-header-82__actions--form, .cta-3__actions--form) {
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 18px;
+}
+body.craft .cta-3__actions--form .lead-form { max-width: 520px; }
+body.craft .cta-3__actions--form .lead-form a { color: var(--text-reverse); }
+
+/* ------------------------------------------------------------------ type */
+
+body.craft :is(
+  .hero-header-82__heading, .feature-459__sr-only, .stats-section-2__heading, .feature-155__heading,
+  .feature-4__heading, .pricing-34__heading, .faq-2__heading, .cta-3__heading
+) {
+  font-family: var(--craft-display);
+  font-weight: 500;
+  letter-spacing: var(--font-display-tracking);
+  text-wrap: balance;
+}
+body.craft :is(
+  .feature-459__feature-title, .stats-section-2__label, .feature-155__feature-title, .feature-4__item-title,
+  .pricing-34__plan-name, .faq-2__question-text
+) {
+  font-family: var(--craft-display);
+  font-weight: 600;
+  letter-spacing: calc(var(--font-display-tracking) / 2);
+}
+body.craft :is(.stats-section-2__value, .pricing-34__price) {
+  font-family: var(--craft-display);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+body.craft :is(
+  .hero-header-82__description, .stats-section-2__description, .feature-155__description, .feature-4__text,
+  .pricing-34__description, .faq-2__description, .cta-3__description, .feature-459__feature-text,
+  .feature-155__feature-text, .feature-4__item-text, .faq-2__answer-text, .pricing-34__plan-description
+) {
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+/* Section labels: a violet square and mono caps (Forma's label, Nodity's terminal voice). */
+body.craft :is(.feature-155__tagline, .feature-4__tagline, .pricing-34__tagline) {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--text-accent);
+  font-family: var(--craft-mono);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+body.craft :is(.feature-155__tagline, .feature-4__tagline, .pricing-34__tagline)::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+/* --------------------------------------------------------------- buttons */
+
+body.craft .button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  gap: 8px;
+  min-height: 46px;
+  padding: 12px 22px;
+  border-radius: var(--radius-4);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  transition:
+    transform 0.18s var(--craft-ease),
+    box-shadow 0.18s var(--craft-ease),
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+/* A light that follows the pointer (fx.ts sets --mx / --my). */
+body.craft .button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(140px circle at var(--mx, 50%) var(--my, 50%), var(--craft-spot, color-mix(in srgb, var(--craft-accent) 12%, transparent)), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+body.craft .button:hover::before { opacity: 1; }
+body.craft .button:active { transform: translateY(0) scale(0.98); }
+body.craft .button:focus-visible { outline: 2px solid var(--line-accent); outline-offset: 3px; }
+
+body.craft .button--primary {
+  --craft-spot: rgba(255, 255, 255, 0.32);
+  background: var(--craft-button);
+  border-color: transparent;
+  color: var(--text-reverse);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 1px 2px color-mix(in srgb, var(--craft-ink) 22%, transparent),
+    0 10px 24px -10px color-mix(in srgb, var(--craft-accent) 75%, transparent);
+}
+body.craft .button--primary:hover {
+  background: var(--craft-button);
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 1px 2px color-mix(in srgb, var(--craft-ink) 22%, transparent),
+    0 16px 32px -12px color-mix(in srgb, var(--craft-accent) 85%, transparent);
+}
+body.craft .button--secondary {
+  background: var(--bg-main);
+  border-color: var(--line-tertiary);
+  color: var(--text-main);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--craft-ink) 6%, transparent);
+}
+body.craft .button--secondary:hover {
+  background: var(--bg-main);
+  border-color: color-mix(in srgb, var(--line-accent) 40%, transparent);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--craft-shadow-tint) 25%, transparent);
+}
+body.craft .button--link {
+  min-height: 0;
+  padding: 0;
+  overflow: visible;
+  color: var(--text-accent);
+  font-weight: 600;
+}
+body.craft .button--link::before { display: none; }
+body.craft .button--link .button__icon { color: currentColor; width: 18px; height: 18px; transition: transform 0.18s var(--craft-ease); }
+body.craft .button--link:hover { text-decoration: none; }
+body.craft .button--link:hover .button__icon { transform: translateX(3px); }
+body.craft .button--small { min-height: 40px; padding: 8px 16px; font-size: 16px; line-height: 24px; }
+@media (prefers-reduced-motion: reduce) {
+  body.craft .button, body.craft .button:hover { transform: none; }
+}
+
+/* ----------------------------------------------------------------- logo */
+
+body.craft .company-logo {
+  width: auto;
+  aspect-ratio: auto;
+  gap: 9px;
+  color: var(--text-main);
+}
+body.craft .company-logo__mark { display: none; }
+body.craft .company-logo::before {
+  content: "";
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M9 19.5c2.6 0 2.6-3 5-3s2.4 3 5 3'/%3E%3Cpath d='M9 13.5c2.6 0 2.6-3 5-3s2.4 3 5 3' opacity='.65'/%3E%3Ccircle cx='14' cy='6.5' r='1.2' fill='white' stroke='none' opacity='.5'/%3E%3C/svg%3E") center / 28px no-repeat,
+    var(--craft-button);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 12px -4px color-mix(in srgb, var(--craft-accent) 60%, transparent);
+}
+/* The name is product.name (CompanyLogo's label), in lowercase like Forma's wordmark; drop the
+   text-transform here and on .footer-11__wordmark to keep the name's own case. */
+body.craft .company-logo__name {
+  display: inline;
+  text-transform: lowercase;
+  font-family: var(--craft-display);
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+/* --------------------------------------------------------------- navbar */
+
+body.craft .navbar-2 {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-main) 78%, transparent);
+  -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  backdrop-filter: saturate(1.6) blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+body.craft .navbar-2.is-scrolled {
+  border-bottom-color: var(--line-additional);
+  box-shadow: 0 8px 24px -18px color-mix(in srgb, var(--craft-shadow-tint) 30%, transparent);
+}
+body.craft .navbar-2__bar {
+  min-height: 68px;
+  max-width: calc(var(--size-container-l) + 2 * var(--craft-gutter));
+  margin-inline: auto;
+  width: 100%;
+  padding: 0 var(--craft-gutter);
+}
+body.craft .navbar-2__link {
+  color: var(--text-secondary);
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.12s ease;
+}
+body.craft .navbar-2__link:hover { color: var(--text-main); }
+body.craft .navbar-2__toggle { border-radius: var(--radius-4); padding: 10px; }
+body.craft .navbar-2--menu-open { background: color-mix(in srgb, var(--bg-main) 97%, transparent); }
+body.craft .navbar-2__menu { padding-inline: var(--craft-gutter); }
+body.craft .navbar-2__links--panel .navbar-2__link { padding-block: 14px; font-size: 17px; color: var(--text-main); border-bottom: 1px solid var(--line-additional); }
+@media (max-width: 479px) {
+  body.craft .navbar-2__actions .button--secondary { display: none; }
+}
+
+/* ----------------------------------------------------------------- hero */
+
+body.craft .hero-header-82 {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  padding-bottom: var(--craft-section-space);
+}
+/* Forma's light at the sides and a violet haze at the top. Every layer is a radial glow that
+   fades out in all directions (no sized bands, whose inner edge showed as a vertical line on
+   wide screens), and the whole layer fades out towards the bottom of the hero. */
+body.craft .hero-header-82::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 75%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 75%);
+  background:
+    radial-gradient(50% 55% at 50% 0%, color-mix(in srgb, var(--craft-accent-2) 16%, transparent) 0%, transparent 100%),
+    radial-gradient(28% 60% at 0% 55%, color-mix(in srgb, var(--craft-accent) 14%, transparent) 0%, transparent 100%),
+    radial-gradient(28% 60% at 100% 55%, color-mix(in srgb, var(--craft-accent) 14%, transparent) 0%, transparent 100%);
+}
+body.craft .hero-header-82__body { padding: 56px var(--craft-gutter) 48px; }
+body.craft .hero-header-82__column {
+  align-items: center;
+  max-width: 880px;
+  margin-inline: auto;
+  text-align: center;
+  gap: 32px;
+}
+body.craft .hero-header-82__content { align-items: center; gap: 22px; }
+/* A pill above the hero heading (Forma's "New" badge): off; put a short label in `content` to show one. */
+body.craft .hero-header-82__content::before {
+  content: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--line-accent) 18%, transparent);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-tertiary) 70%, transparent);
+  color: var(--text-accent);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  white-space: pre;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--craft-accent) 8%, transparent);
+}
+body.craft .hero-header-82__heading {
+  max-width: 15ch;
+  background: linear-gradient(180deg, var(--text-main) 0%, var(--text-main) 38%, var(--text-accent) 78%, color-mix(in srgb, var(--text-accent) 70%, var(--color-highlight)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: calc(var(--font-display-tracking) - 0.005em);
+  padding-bottom: 0.06em;
+}
+body.craft .hero-header-82__description {
+  max-width: 620px;
+  font-size: 17px;
+  line-height: 27px;
+}
+body.craft .hero-header-82__actions { align-self: center; justify-content: center; gap: 12px; }
+body.craft [data-section="2"] .hero-header-82__image {
+  width: calc(100% - 2 * var(--craft-gutter));
+  max-width: 1200px;
+  margin-inline: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 20px;
+  background-size: auto 100%;
+  background-position: 14% 50%;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--craft-ink) 6%, transparent),
+    0 40px 90px -40px color-mix(in srgb, var(--craft-accent) 60%, transparent),
+    0 20px 40px -24px color-mix(in srgb, var(--craft-ink) 35%, transparent);
+}
+@media (min-width: 640px) {
+  body.craft [data-section="2"] .hero-header-82__image { aspect-ratio: 16 / 9; background-size: cover; background-position: center; border-radius: 28px; }
+}
+@media (min-width: 768px) {
+  body.craft .hero-header-82__body { padding: 88px var(--craft-gutter) 64px; }
+  body.craft .hero-header-82__description { font-size: 19px; line-height: 30px; }
+}
+@media (max-width: 479px) {
+  body.craft .hero-header-82__actions { flex-direction: column; width: 100%; }
+  body.craft .hero-header-82__actions .button { width: 100%; }
+
+}
+
+/* --------------------------------------------------------- how it works */
+
+body.craft .feature-459 { background: transparent; padding: var(--craft-section-space) var(--craft-gutter); }
+body.craft .feature-459__card {
+  background: var(--bg-main);
+  border-color: var(--line-tertiary);
+  border-radius: 28px;
+  box-shadow: var(--craft-shadow-card);
+}
+/* The mockup is portrait (5:6). Stacked until there is room for two even columns, so the
+   image is never squeezed into a sliver beside the text. */
+body.craft [data-section="3"] .feature-459__media { aspect-ratio: 5 / 6; background-position: center top; }
+@media (min-width: 768px) {
+  body.craft .feature-459__card { grid-template-columns: 100%; }
+}
+@media (min-width: 1024px) {
+  body.craft .feature-459__card { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  /* Keep the mockup's own 5:6 so nothing is cropped; the card takes its height from it and the
+     text is centred beside it. */
+  body.craft [data-section="3"] .feature-459__media { align-self: start; aspect-ratio: 5 / 6; background-size: cover; background-position: center; }
+  body.craft [data-section="3"] .feature-459__content { align-self: center; }
+}
+/* The section title is screen-reader-only in the library; show it here. */
+body.craft .feature-459__sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  margin: 0 0 4px;
+  color: var(--text-main);
+  font-size: var(--font-titles-h2-size);
+  line-height: var(--font-titles-h2-line-height);
+}
+body.craft .feature-459__content { justify-content: center; gap: 28px; padding: 32px 24px; }
+body.craft .feature-459__feature { gap: 18px; }
+body.craft .feature-459__feature-icon { width: 44px; height: 44px; filter: drop-shadow(0 6px 12px color-mix(in srgb, var(--craft-accent) 35%, transparent)); }
+body.craft .feature-459__feature-title { font-size: 20px; line-height: 26px; }
+@media (min-width: 768px) {
+  body.craft .feature-459__content { padding: 56px; }
+}
+
+/* ------------------------------------------------- stats: the dark panel */
+
+body.craft .stats-section-2 {
+  padding: var(--craft-section-space) var(--craft-gutter);
+  background: transparent;
+}
+body.craft .stats-section-2__container {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  max-width: calc(var(--size-container-l) + 96px);
+  padding: 64px 22px;
+  border-radius: 28px;
+  background: var(--craft-panel-dark);
+  box-shadow: 0 40px 80px -40px color-mix(in srgb, var(--craft-ink) 60%, transparent);
+}
+/* On a dark page the panel is set apart by a hairline instead of its shadow. */
+:root[data-theme="dark"] body.craft :is(.stats-section-2__container, .pricing-34__card:last-child) { box-shadow: inset 0 0 0 1px var(--line-tertiary); }
+body.craft .stats-section-2__container > :not(.fx-waves) { position: relative; z-index: 1; }
+body.craft :is(.stats-section-2__heading, .stats-section-2__label, .stats-section-2__value) { color: var(--text-reverse); }
+body.craft :is(.stats-section-2__description, .stats-section-2__stat-description) { color: var(--text-reverse-secondary); }
+body.craft .stats-section-2__heading { font-size: var(--font-titles-h2-size); line-height: var(--font-titles-h2-line-height); }
+body.craft .stats-section-2--card .stats-section-2__stat {
+  padding: 28px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.25s var(--craft-ease);
+}
+body.craft .stats-section-2--card .stats-section-2__stat:hover {
+  border-color: color-mix(in srgb, var(--color-highlight) 45%, transparent);
+  background: rgba(255, 255, 255, 0.07);
+}
+body.craft .stats-section-2__value { font-size: 64px; line-height: 64px; margin-bottom: 8px; }
+body.craft .stats-section-2__label { font-size: 18px; line-height: 24px; }
+body.craft .stats-section-2__stat-description { font-size: 16px; line-height: 24px; }
+@media (min-width: 768px) {
+  body.craft .stats-section-2__container { padding: 88px 48px; border-radius: 32px; }
+  body.craft .stats-section-2__stats { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  body.craft .stats-section-2__stats { grid-auto-flow: column; grid-template-columns: none; }
+}
+
+/* ------------------------------------------- what's inside: Forma's grid */
+
+body.craft .feature-155--tertiary {
+  margin-top: 0;
+  background: var(--bg-secondary);
+  border-block: 1px solid var(--line-additional);
+}
+body.craft .feature-155 { padding-inline: var(--craft-gutter); }
+body.craft .feature-155__title { gap: 18px; }
+body.craft .feature-155__heading { font-size: var(--font-titles-h2-size); line-height: var(--font-titles-h2-line-height); }
+body.craft .feature-155__features {
+  --craft-mark: color-mix(in srgb, var(--line-accent) 35%, transparent);
+  position: relative;
+  gap: 0;
+  border-block: 1px solid var(--line-tertiary);
+}
+body.craft .feature-155__feature {
+  position: relative;
+  gap: 18px;
+  padding: 32px 4px;
+  border-top: 1px solid var(--line-tertiary);
+}
+body.craft .feature-155__feature:first-child { border-top: 0; }
+/* Corner marks where the grid lines cross. */
+body.craft .feature-155__feature::before,
+body.craft .feature-155__features::before,
+body.craft .feature-155__features::after {
+  content: "";
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  background:
+    linear-gradient(var(--craft-mark), var(--craft-mark)) center / 1px 100% no-repeat,
+    linear-gradient(var(--craft-mark), var(--craft-mark)) center / 100% 1px no-repeat;
+}
+body.craft .feature-155__feature::before { left: -6px; top: -6px; }
+body.craft .feature-155__features::before { right: -6px; top: -6px; }
+body.craft .feature-155__features::after { right: -6px; bottom: -6px; }
+body.craft .feature-155__icon {
+  width: 46px;
+  height: 46px;
+  padding: 12px;
+  border-radius: 13px;
+  background: var(--bg-main);
+  color: var(--icon-accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line-accent) 16%, transparent), 0 6px 16px -8px color-mix(in srgb, var(--craft-accent) 50%, transparent);
+}
+body.craft .feature-155__feature-title { font-size: 19px; line-height: 25px; }
+@media (min-width: 768px) {
+  body.craft .feature-155__features--four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.craft .feature-155__feature { padding: 36px 28px; border-left: 1px solid var(--line-tertiary); }
+  body.craft .feature-155__features--four .feature-155__feature:nth-child(-n + 2) { border-top: 0; }
+  body.craft .feature-155__features--four .feature-155__feature:nth-child(odd) { border-left: 0; }
+}
+@media (min-width: 1100px) {
+  body.craft .feature-155__features--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* :nth-child(n) matches the specificity of the two-column :nth-child(odd) rule above, which
+     otherwise removes the line before the third item. */
+  body.craft .feature-155__features--four .feature-155__feature:nth-child(n) { border-top: 0; border-left: 1px solid var(--line-tertiary); }
+  body.craft .feature-155__features--four .feature-155__feature:first-child { border-left: 0; }
+}
+
+/* ------------------------------------------------------------ fake door */
+
+body.craft .feature-4 { background: transparent; padding-inline: var(--craft-gutter); }
+body.craft .feature-4__heading { font-size: var(--font-titles-h2-size); line-height: var(--font-titles-h2-line-height); }
+body.craft .feature-4__item { padding-top: 20px; border-top: 1px solid var(--line-tertiary); }
+body.craft .feature-4__item-title { font-size: 18px; line-height: 24px; }
+body.craft .feature-4__media {
+  border-radius: 24px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--craft-ink) 6%, transparent), 0 40px 80px -40px color-mix(in srgb, var(--craft-accent) 65%, transparent);
+}
+@media (min-width: 768px) { body.craft .feature-4__media { border-radius: 28px; } }
+
+/* -------------------------------------------------------------- pricing */
+
+body.craft .pricing-34 {
+  background: transparent;
+  padding-inline: var(--craft-gutter);
+}
+body.craft .pricing-34__heading { font-size: var(--font-titles-h2-size); line-height: var(--font-titles-h2-line-height); }
+body.craft .pricing-34__pane { gap: 16px; }
+body.craft .pricing-34__card {
+  position: relative;
+  padding: 28px;
+  border-radius: 22px;
+  background: var(--bg-main);
+  border-color: var(--line-tertiary);
+  box-shadow: var(--craft-shadow-card);
+  transition: transform 0.25s var(--craft-ease), box-shadow 0.25s var(--craft-ease);
+}
+body.craft .pricing-34__card:hover { transform: translateY(-3px); box-shadow: var(--craft-shadow-lift); }
+body.craft .pricing-34__card--highlighted {
+  border: 1.5px solid var(--line-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--line-accent) 8%, transparent), 0 30px 60px -30px color-mix(in srgb, var(--craft-accent) 55%, transparent);
+}
+body.craft .pricing-34__badge {
+  position: absolute;
+  top: -13px;
+  left: 28px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--craft-button);
+  color: var(--text-reverse);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--craft-accent) 70%, transparent);
+}
+body.craft .pricing-34__period { margin-left: 6px; font-family: var(--font-family-body); font-size: 16px; letter-spacing: 0; color: var(--text-secondary); }
+body.craft .pricing-34__plan-name { font-size: 22px; line-height: 28px; }
+body.craft .pricing-34__price { font-size: 56px; line-height: 60px; }
+body.craft .pricing-34__note { color: var(--text-secondary); }
+body.craft .pricing-34__divider { border-color: var(--line-additional); }
+body.craft .pricing-34__check { color: var(--icon-accent); }
+body.craft .pricing-34__actions .button { width: 100%; }
+/* Lite: a quiet outline button. */
+body.craft .pricing-34__card:first-child .button {
+  --craft-spot: color-mix(in srgb, var(--craft-accent) 12%, transparent);
+  background: var(--bg-main);
+  border-color: var(--line-tertiary);
+  color: var(--text-main);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--craft-ink) 6%, transparent);
+}
+/* The last plan: Forma's dark card, with an inverted button. */
+body.craft .pricing-34__card:last-child {
+  background: var(--craft-panel-dark);
+  border-color: transparent;
+}
+body.craft .pricing-34__card:last-child :is(.pricing-34__plan-name, .pricing-34__price) { color: var(--text-reverse); }
+body.craft .pricing-34__card:last-child :is(.pricing-34__plan-description, .pricing-34__note, .pricing-34__feature) { color: var(--text-reverse-secondary); }
+body.craft .pricing-34__card:last-child .pricing-34__check { color: color-mix(in srgb, var(--craft-accent) 35%, white); }
+body.craft .pricing-34__card:last-child .pricing-34__divider { border-color: rgba(255, 255, 255, 0.12); }
+body.craft .pricing-34__card:last-child .button {
+  --craft-spot: color-mix(in srgb, var(--craft-accent) 16%, transparent);
+  background: var(--color-white-alpha-100);
+  border-color: transparent;
+  color: var(--craft-ink);
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.5);
+}
+@media (min-width: 768px) { body.craft .pricing-34__pane { gap: 20px; } }
+
+/* ------------------------------------------------------------------ faq */
+
+body.craft .faq-2 { background: transparent; padding-inline: var(--craft-gutter); }
+body.craft .faq-2--card .faq-2__item {
+  border: 1px solid var(--line-tertiary);
+  border-radius: 18px;
+  background: var(--bg-secondary);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+body.craft .faq-2--card .faq-2__item:hover { border-color: color-mix(in srgb, var(--line-accent) 28%, transparent); }
+body.craft .faq-2--card .faq-2__item[open] {
+  background: var(--bg-main);
+  border-color: color-mix(in srgb, var(--line-accent) 32%, transparent);
+  box-shadow: var(--craft-shadow-card);
+}
+body.craft .faq-2__question { cursor: pointer; }
+body.craft .faq-2__question-text { font-size: 17px; line-height: 24px; }
+body.craft .faq-2__icon {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 7px;
+  border-radius: 9px;
+  background: var(--bg-tertiary);
+  color: var(--icon-accent);
+  transition: transform 0.25s var(--craft-ease), background-color 0.2s ease;
+}
+body.craft .faq-2__item[open] .faq-2__icon { background: var(--bg-accent); color: var(--icon-reverse); }
+body.craft .faq-2__heading { font-size: var(--font-titles-h2-size); line-height: var(--font-titles-h2-line-height); }
+
+/* ----------------------------------------------- cta: the violet panel */
+
+body.craft .cta-3 { background: transparent; padding: var(--craft-section-space) var(--craft-gutter); }
+body.craft .cta-3__container {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  max-width: calc(var(--size-container-l) + 96px);
+  padding: 72px 22px;
+  border-radius: 28px;
+  background: var(--craft-panel-violet);
+  box-shadow: 0 40px 80px -40px color-mix(in srgb, var(--craft-accent) 75%, transparent);
+}
+body.craft .cta-3__container > :not(.fx-waves) { position: relative; z-index: 1; }
+body.craft .cta-3__heading { color: var(--text-reverse); font-size: var(--font-titles-h2-size); line-height: var(--font-titles-h2-line-height); }
+body.craft .cta-3__description { color: rgba(255, 255, 255, 0.9); font-size: 18px; line-height: 28px; }
+body.craft .cta-3__actions { gap: 12px; justify-content: center; }
+body.craft .cta-3 .button--primary {
+  --craft-spot: color-mix(in srgb, var(--craft-accent) 14%, transparent);
+  background: var(--color-white-alpha-100);
+  color: var(--craft-accent);
+  box-shadow: 0 12px 28px -12px color-mix(in srgb, var(--craft-ink) 55%, transparent);
+}
+body.craft .cta-3 .button--secondary {
+  --craft-spot: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-reverse);
+  box-shadow: none;
+}
+body.craft .cta-3 .button--secondary:hover { border-color: rgba(255, 255, 255, 0.6); background: rgba(255, 255, 255, 0.14); }
+@media (min-width: 768px) {
+  body.craft .cta-3__container { padding: 112px 48px; border-radius: 32px; }
+}
+@media (max-width: 479px) {
+  body.craft .cta-3__actions { flex-direction: column; width: 100%; }
+  body.craft .cta-3__actions .button { width: 100%; }
+}
+
+/* --------------------------------------------------------------- footer */
+
+body.craft .footer-11 {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  padding-inline: var(--craft-gutter);
+}
+body.craft .footer-11__link { color: var(--text-secondary); transition: color 0.12s ease; }
+body.craft .footer-11__link:hover { color: var(--text-main); }
+body.craft .footer-11__divider { border-color: var(--line-additional); }
+/* Forma's oversized wordmark (product.name, from SiteFooter), fading into the page. */
+body.craft .footer-11__wordmark {
+  text-transform: lowercase;
+  display: block;
+  margin: 24px auto -0.2em;
+  font-family: var(--craft-display);
+  font-size: clamp(72px, 19vw, 280px);
+  line-height: 0.9;
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  text-align: center;
+  white-space: nowrap;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--line-accent) 14%, transparent) 0%, transparent 85%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------- effect layers */
+
+/* Nodity's pointer background: ASCII glyphs in a wake behind the cursor. */
+body.craft .fx-pointer {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+/* Nodity's wave panels: an animated ASCII field behind the panel content. */
+body.craft .fx-waves {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 100%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(120% 90% at 50% 100%, #000 20%, transparent 75%);
+}
+body.craft .fx-waves canvas { display: block; width: 100%; height: 100%; }
+
+/* Scramble overlay: the real text stays in the DOM, transparent, while glyphs settle. */
+body.craft .fx-scramble { position: relative; }
+body.craft .fx-scramble > .fx-scramble__text { color: transparent; }
+body.craft .fx-scramble__overlay { position: absolute; inset: 0; white-space: pre; pointer-events: none; }
+
+/* Scroll reveal. The layout sets html.fx before first paint; fx.js adds .is-revealed as each
+   block enters the view. If fx.js never runs, the layout's failsafe shows everything.
+   Keep this list in step with REVEAL in fx.js. `translate` is used so the tilt's transform
+   composes with it. */
+@media (prefers-reduced-motion: no-preference) {
+  html.fx:not(.fx-failsafe) body.craft :is(
+    .hero-header-82__column, .hero-header-82__image, .feature-459__card, .stats-section-2__container,
+    .stats-section-2__stat, .feature-155__title, .feature-155__feature, .feature-155__actions,
+    .feature-4__content, .feature-4__media, .pricing-34__head, .pricing-34__card, .faq-2__title,
+    .faq-2__item, .cta-3__container
+  ) {
+    opacity: 0;
+    translate: 0 16px;
+    transition:
+      opacity 0.7s var(--craft-ease) var(--reveal-delay, 0ms),
+      translate 0.7s var(--craft-ease) var(--reveal-delay, 0ms),
+      transform 0.25s var(--craft-ease),
+      box-shadow 0.25s var(--craft-ease),
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+  html.fx:not(.fx-failsafe) body.craft .is-revealed { opacity: 1; translate: 0 0; }
+}
+
+/* ------------------------------------------------- long-form text (legal, changelog) */
+
+body.craft .legal-prose { color: var(--text-main); font-size: 17px; line-height: 28px; }
+body.craft .legal-prose > * + * { margin-top: 16px; }
+body.craft .legal-prose h2 {
+  margin-top: 44px;
+  font-family: var(--craft-display);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 96px;
+}
+body.craft .legal-prose h2:first-child { margin-top: 0; }
+body.craft .legal-prose h3 { margin-top: 28px; font-size: 19px; line-height: 26px; font-weight: 600; }
+body.craft .legal-prose p, body.craft .legal-prose li { color: var(--text-secondary); text-wrap: pretty; }
+body.craft .legal-prose strong { color: var(--text-main); font-weight: 600; }
+body.craft .legal-prose ul { list-style: disc; padding-left: 22px; }
+body.craft .legal-prose ol { list-style: decimal; padding-left: 22px; }
+body.craft .legal-prose li + li { margin-top: 8px; }
+body.craft .legal-prose li::marker { color: var(--text-accent); }
+body.craft .legal-prose a { color: var(--text-accent); text-decoration: underline; text-underline-offset: 2px; }
+body.craft .legal-prose code { padding: 2px 6px; border-radius: 6px; background: var(--bg-secondary); font-family: var(--craft-mono); font-size: 16px; }
+body.craft .legal-table { overflow-x: auto; border: 1px solid var(--line-tertiary); border-radius: 14px; }
+body.craft .legal-table table { width: 100%; border-collapse: collapse; font-size: 16px; line-height: 24px; }
+body.craft .legal-table th, body.craft .legal-table td { padding: 12px 14px; border-bottom: 1px solid var(--line-additional); text-align: left; vertical-align: top; }
+body.craft .legal-table tr:last-child td { border-bottom: 0; }
+body.craft .legal-table th { background: var(--bg-secondary); color: var(--text-main); font-weight: 600; }
+body.craft .legal-table td { color: var(--text-secondary); overflow-wrap: anywhere; }

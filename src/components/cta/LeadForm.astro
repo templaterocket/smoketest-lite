@@ -1,0 +1,243 @@
+---
+/**
+ * The signup form behind the waitlist, access and contact CTAs. It sends to the provider in
+ * site.config.ts (src/lib/leads/send.ts), or, for an `embed` provider, posts natively to the
+ * email service's form action. Attribution is read from the URL only; nothing is stored.
+ * While the provider is not connected ("none", or a {{PLACEHOLDER}} in its settings) the form
+ * sends nothing and tells the visitor so, instead of going on to the thank-you page.
+ */
+import Button from "../ui/Button.astro";
+import { site } from "../../site.config";
+import { EMBED_EMAIL_FIELD, type Question } from "../../config/schema";
+
+interface Props {
+  id: string;
+  kind: "waitlist" | "access" | "contact";
+  submitLabel: string;
+  placeholder?: string;
+  note?: string;
+  questions?: Question[];
+  /** inline: email and button on one row (waitlist); stacked: one field per row. */
+  layout?: "inline" | "stacked";
+  /** dark: for a coloured panel. */
+  tone?: "light" | "dark";
+}
+
+const { id, kind, submitLabel, placeholder = "you@company.com", note, questions = [], layout = "stacked", tone = "light" } = Astro.props;
+const { provider, consent, consentText, successPath, attribution } = site.leads;
+const embed = provider.id === "embed" ? provider : null;
+const emailName = embed ? (embed.emailField ?? EMBED_EMAIL_FIELD[embed.service]) : "email";
+const turnstileKey = provider.id === "cloudflare" ? provider.turnstileSiteKey : undefined;
+const client = { kind, provider, successPath, attribution, consentText };
+
+const dark = tone === "dark";
+const field = [
+  "w-full min-h-[46px] rounded-md border px-4 text-lg transition-[border-color,box-shadow] duration-150 outline-none",
+  dark
+    ? "border-white/30 bg-white/10 text-white placeholder:text-white/70 focus:border-white focus:ring-4 focus:ring-white/20"
+    : "border-line bg-surface text-ink placeholder:text-ink-tertiary focus:border-line-accent focus:ring-4 focus:ring-accent/15",
+].join(" ");
+const labelClass = `text-md font-medium ${dark ? "text-white" : "text-ink"}`;
+const quiet = dark ? "text-white/90" : "text-ink-secondary";
+---
+<form
+  id={id}
+  class:list={["lead-form @container flex w-full flex-col gap-3", layout === "inline" && "max-w-[520px]"]}
+  data-lead-form={JSON.stringify(client)}
+  action={embed?.action}
+  method={embed ? "post" : undefined}
+  novalidate={embed ? undefined : true}
+>
+  {/* Bots fill every field; people never see this one. */}
+  <div class="absolute -left-[9999px] size-px overflow-hidden" aria-hidden="true">
+    <label>Company website <input type="text" name="company_website" tabindex="-1" autocomplete="off" /></label>
+  </div>
+  {embed && Object.entries(embed.hiddenFields).map(([name, value]) => <input type="hidden" name={name} value={value} />)}
+
+  {/* Inline: field and button share a row once the form itself (not the screen) is wide enough. */}
+  {layout === "inline" ? (
+    <div class="flex w-full flex-col gap-3 @[400px]:flex-row">
+      <label class="sr-only" for={`${id}-email`}>Email address</label>
+      <input id={`${id}-email`} class:list={[field, "@[400px]:flex-1"]} type="email" name={emailName} required autocomplete="email" inputmode="email" placeholder={placeholder} />
+      <Button type="submit" label={submitLabel} class="min-h-12 shrink-0" data-lead-submit />
+    </div>
+  ) : (
+    <div class="flex flex-col gap-4">
+      {kind === "contact" && (
+        <div class="flex flex-col gap-2">
+          <label class={labelClass} for={`${id}-name`}>Name</label>
+          <input id={`${id}-name`} class={field} type="text" name="name" required autocomplete="name" />
+        </div>
+      )}
+      <div class="flex flex-col gap-2">
+        <label class={labelClass} for={`${id}-email`}>Work email</label>
+        <input id={`${id}-email`} class={field} type="email" name={emailName} required autocomplete="email" inputmode="email" placeholder={placeholder} />
+      </div>
+      {questions.map((q) => (
+        q.type === "radio" ? (
+          <fieldset class="m-0 flex min-w-0 flex-col gap-2 border-0 p-0">
+            <legend class:list={[labelClass, "mb-1"]}>{q.label}</legend>
+            {q.options?.map((option) => (
+              <label class:list={["flex cursor-pointer items-center gap-3 rounded-md border px-4 py-3 text-lg transition-colors", dark ? "border-white/25 text-white hover:border-white/50" : "border-line text-ink hover:border-line-accent has-[:checked]:border-line-accent has-[:checked]:bg-accent-soft"]}>
+                <input type="radio" name={`q_${q.id}`} value={option} required={q.required} class="size-4 accent-[var(--bg-accent)]" />
+                {option}
+              </label>
+            ))}
+          </fieldset>
+        ) : (
+          <div class="flex flex-col gap-2">
+            <label class={labelClass} for={`${id}-${q.id}`}>{q.label}{!q.required && <span class:list={["ml-1 font-normal", quiet]}>(optional)</span>}</label>
+            {q.type === "select" ? (
+              <select id={`${id}-${q.id}`} class:list={[field, "cursor-pointer appearance-none bg-[url('data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22%23687083%22%20stroke-width=%222%22%3E%3Cpath%20d=%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:20px] bg-[right_14px_center] bg-no-repeat pr-11"]} name={`q_${q.id}`} required={q.required}>
+                <option value="">{q.placeholder ?? "Choose one"}</option>
+                {q.options?.map((option) => <option value={option}>{option}</option>)}
+              </select>
+            ) : (
+              <input id={`${id}-${q.id}`} class={field} type="text" name={`q_${q.id}`} required={q.required} placeholder={q.placeholder} />
+            )}
+          </div>
+        )
+      ))}
+      {kind === "contact" && (
+        <div class="flex flex-col gap-2">
+          <label class={labelClass} for={`${id}-message`}>Message</label>
+          <textarea id={`${id}-message`} class:list={[field, "min-h-32 py-3"]} name="message" required rows="4"></textarea>
+        </div>
+      )}
+      <Button type="submit" label={submitLabel} class="mt-2 min-h-12 w-full" data-lead-submit />
+    </div>
+  )}
+
+  {consent === "checkbox" ? (
+    <label class:list={["flex cursor-pointer items-start gap-3 text-md", quiet]}>
+      <input type="checkbox" name="consent" value="yes" required class="mt-1 size-4 shrink-0 accent-[var(--bg-accent)]" />
+      <span>{consentText} <a class="underline underline-offset-2 hover:no-underline" href="/legal/privacy/">Privacy policy</a>.</span>
+    </label>
+  ) : (
+    // Inline (email + button): the note waits until the visitor first focuses the form, so the
+    // hero stays short; it then stays, and it is always there before anything can be submitted.
+    <div class:list={["lead-form__note", layout === "inline" && "lead-form__note--reveal"]} data-lead-note>
+      <p class:list={["text-sm text-pretty", quiet, layout === "inline" && "text-center"]}>
+        {note && <>{note} </>}{consentText} <a class="underline underline-offset-2 hover:no-underline" href="/legal/privacy/">Privacy policy</a>.
+      </p>
+    </div>
+  )}
+  {turnstileKey && (
+    <>
+      <div class="cf-turnstile" data-sitekey={turnstileKey} data-size="flexible" data-theme={dark ? "dark" : "light"}></div>
+      <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    </>
+  )}
+  <p data-lead-status role="status" aria-live="polite" class:list={["text-md font-medium empty:hidden", dark ? "text-white" : "text-danger"]}></p>
+</form>
+
+<style is:global>
+  /* The reveal: collapsed (and out of the tab order) until the form is first focused. */
+  .lead-form__note--reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    margin-top: -12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: grid-template-rows 0.3s ease, margin-top 0.3s ease, opacity 0.25s ease, visibility 0s 0.3s;
+  }
+  .lead-form__note--reveal > p { min-height: 0; overflow: hidden; }
+  .lead-form.is-engaged .lead-form__note--reveal,
+  .lead-form:focus-within .lead-form__note--reveal {
+    grid-template-rows: 1fr;
+    margin-top: 0;
+    opacity: 1;
+    visibility: visible;
+    transition: grid-template-rows 0.3s ease, margin-top 0.3s ease, opacity 0.25s ease 0.05s, visibility 0s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lead-form__note--reveal, .lead-form.is-engaged .lead-form__note--reveal { transition: none; }
+  }
+</style>
+
+<script>
+  import { NOT_CONNECTED, leadsConnected, sendLead, type Lead } from "../../lib/leads/send";
+  import { captureAttribution, readAttribution, type AttributionMode } from "../../lib/leads/attribution";
+  import type { Provider } from "../../config/schema";
+
+  interface ClientConfig {
+    kind: Lead["cta"];
+    provider: Provider;
+    successPath: string;
+    attribution: AttributionMode;
+    consentText: string;
+  }
+  const forms = [...document.querySelectorAll<HTMLFormElement>("form[data-lead-form]")];
+  const first = forms[0] ? (JSON.parse(forms[0].dataset.leadForm ?? "{}") as ClientConfig) : null;
+  if (first) captureAttribution(first.attribution);
+
+  for (const form of forms) {
+    const config = JSON.parse(form.dataset.leadForm ?? "{}") as ClientConfig;
+    const status = form.querySelector<HTMLElement>("[data-lead-status]");
+    const submit = form.querySelector<HTMLButtonElement>("[data-lead-submit]");
+    const submitText = submit?.querySelector(".button__label");
+    const idleLabel = submitText?.textContent ?? "";
+    const success = `${config.successPath}?cta=${encodeURIComponent(config.kind)}`;
+    // Once focused, the consent note stays open (see .lead-form__note--reveal).
+    form.addEventListener("focusin", () => form.classList.add("is-engaged"), { once: true });
+
+    form.addEventListener("submit", async (event) => {
+      const data = new FormData(form);
+      const bot = String(data.get("company_website") ?? "") !== "";
+      if (!leadsConnected(config.provider)) {
+        // Nowhere to send to: nothing leaves the browser, and nobody is told they signed up.
+        event.preventDefault();
+        if (!bot && form.reportValidity() && status) status.textContent = NOT_CONNECTED;
+        console.info("[smoketest] leads.provider in src/site.config.ts is \"none\" or still has a {{PLACEHOLDER}}: nothing was sent.");
+        return;
+      }
+      if (config.provider.id === "embed") {
+        // The browser posts to the email service; only stop it for bots.
+        if (bot) {
+          event.preventDefault();
+          location.assign(success);
+        }
+        return;
+      }
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      if (bot) {
+        location.assign(success);
+        return;
+      }
+      if (status) status.textContent = "";
+      submit?.setAttribute("disabled", "");
+      form.setAttribute("aria-busy", "true");
+      if (submitText) submitText.textContent = "Sending…";
+
+      const answers: Record<string, string> = {};
+      for (const [key, value] of data) if (key.startsWith("q_")) answers[key.slice(2)] = String(value);
+      const lead: Lead = {
+        email: String(data.get("email") ?? "").trim(),
+        name: String(data.get("name") ?? "").trim() || undefined,
+        message: String(data.get("message") ?? "").trim() || undefined,
+        answers,
+        cta: config.kind,
+        utm: readAttribution(config.attribution),
+        turnstileToken: String(data.get("cf-turnstile-response") ?? "") || undefined,
+        consent: config.consentText,
+        page: location.pathname,
+        referrer: document.referrer,
+      };
+      const result = await sendLead(config.provider as Exclude<Provider, { id: "embed" }>, lead);
+      if (result.ok) {
+        form.dispatchEvent(new CustomEvent("lead:sent", { bubbles: true, detail: { cta: config.kind } }));
+        const next = new URL(success, location.origin);
+        for (const [key, value] of Object.entries(result.query ?? {})) next.searchParams.set(key, value);
+        location.assign(next);
+        return;
+      }
+      if (status) status.textContent = result.message;
+      // A Turnstile token works once: get a fresh one for the next try.
+      (window as { turnstile?: { reset: () => void } }).turnstile?.reset();
+      submit?.removeAttribute("disabled");
+      form.removeAttribute("aria-busy");
+      if (submitText) submitText.textContent = idleLabel;
+    });
+  }
+</script>

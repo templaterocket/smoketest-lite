@@ -1,0 +1,59 @@
+---
+/**
+ * One call to action from site.config.ts, rendered by its type: a waitlist form inline, an
+ * access or contact form in a dialog, a demo booking page, a pre-order checkout, or a link.
+ * The demo opens the booking page in a new tab, so no third-party script (or cookie) loads here.
+ */
+import Button from "../ui/Button.astro";
+import Dialog from "../ui/Dialog.astro";
+import LeadForm from "./LeadForm.astro";
+import type { Cta } from "../../config/schema";
+
+interface Props {
+  cta: Cta;
+  /** A unique id for this placement (forms and dialogs need one each). */
+  id: string;
+  /** primary: the filled button; secondary: the outline one; link: text with an arrow. Forms are always primary. */
+  variant?: "primary" | "secondary" | "link";
+  tone?: "light" | "dark";
+}
+
+const { cta, id, variant = "primary", tone = "light" } = Astro.props;
+const quiet = tone === "dark" ? "text-white/90" : "text-ink-secondary";
+---
+{cta.type === "waitlist" && (
+  <LeadForm id={id} kind="waitlist" submitLabel={cta.label} placeholder={cta.placeholder} note={cta.note} layout="inline" tone={tone} />
+)}
+
+{cta.type === "access" && (
+  <>
+    <Button label={cta.label} variant={variant} data-dialog-open={`${id}-dialog`} aria-haspopup="dialog" />
+    <Dialog id={`${id}-dialog`} title={cta.title} description={cta.description}>
+      <LeadForm id={id} kind="access" submitLabel={cta.submitLabel} questions={cta.questions} />
+    </Dialog>
+  </>
+)}
+
+{cta.type === "contact" && (
+  <>
+    <Button label={cta.label} variant={variant} data-dialog-open={`${id}-dialog`} aria-haspopup="dialog" />
+    <Dialog id={`${id}-dialog`} title={cta.title} description={cta.description}>
+      <LeadForm id={id} kind="contact" submitLabel={cta.submitLabel} />
+    </Dialog>
+  </>
+)}
+
+{cta.type === "demo" && (
+  <Button label={cta.label} href={cta.url} variant={variant} data-cta="demo" data-cta-provider={cta.provider} />
+)}
+
+{cta.type === "preorder" && (
+  <span class="inline-flex flex-col items-center gap-2">
+    <Button label={cta.label} href={cta.checkoutUrl} variant={variant} data-cta="preorder" />
+    {cta.note && <span class:list={["text-sm", quiet]}>{cta.note}</span>}
+  </span>
+)}
+
+{cta.type === "link" && (
+  <Button label={cta.label} href={cta.href} variant={variant} />
+)}

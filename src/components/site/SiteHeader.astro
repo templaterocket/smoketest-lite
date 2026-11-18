@@ -1,0 +1,25 @@
+---
+/**
+ * The site's navbar on every page: the library Navbar2 fed from site.config.ts. The button
+ * repeats the primary call to action; forms live in the hero, so it scrolls there. Links to
+ * homepage sections follow the layout; the light/dark switch shows with brand.themeToggle.
+ */
+import Navbar2 from "../library/Navbar2.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import { homeHas } from "../../lib/layout";
+import { hasPage } from "../../lib/pages";
+import { site } from "../../site.config";
+
+const primary = site.cta.primary;
+const href = primary.type === "demo" ? primary.url : primary.type === "preorder" ? primary.checkoutUrl : primary.type === "link" ? primary.href : "/#get-started";
+const links = [
+  ...(homeHas("how-it-works") ? [{ label: "How it works", href: "/#how-it-works" }] : []),
+  ...(site.pricing.mode !== "off" && hasPage("/pricing/") ? [{ label: "Pricing", href: "/pricing/" }] : []),
+  { label: "FAQ", href: "/#faq" },
+  ...(hasPage("/changelog/") ? [{ label: "Changelog", href: "/changelog/" }] : []),
+];
+---
+<Navbar2 id="site-nav" logoLabel={site.product.name} logoHref="/" links={links} dropdown={null} actions={[{ label: primary.label, href, variant: "primary" }]}>
+  {site.brand.themeToggle && <ThemeToggle slot="actions" variant="icon" />}
+  {site.brand.themeToggle && <ThemeToggle slot="menu" variant="row" />}
+</Navbar2>

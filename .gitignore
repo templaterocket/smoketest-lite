@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+
+# Wrangler local state (D1, KV)
+.wrangler/
+.dev.vars
+
+# Made by `npm run link-skills` from agent/skills (run it once per checkout)
+.claude/skills/
+.cursor/rules/
